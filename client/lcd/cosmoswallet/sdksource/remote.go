@@ -1,26 +1,42 @@
 package sdksource
 
 import (
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/cmd/gaia/app"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var cdc *codec.Codec
+var cdc = app.MakeCodec()
 
-//Start LCD rest-server at first before continuing to next RPC phase
-//func StartLCDRest()  {
-//
-//}
+var (
+	RootDir string
+	Node	string
+	ChainID string
+)
+
+func SetParas(rootDir,node,chainID string) {
+	RootDir = rootDir
+	Node = node
+	ChainID	= chainID
+}
+
+func init() {
+	var (
+		r string
+		n string
+		c string
+	)
+	SetParas(r,n,c)
+}
 
 
+//get account from /auth/accounts/{address}
 func GetAccount(addr string) string {
 	key, err := sdk.AccAddressFromBech32(addr)
 	if err != nil {
 		return err.Error()
 	}
 
-	cliCtx := context.NewCLIContext().
+	cliCtx := NewCLIContext().
 		WithCodec(cdc).
 		WithAccountDecoder(cdc)
 
@@ -47,3 +63,4 @@ func GetAccount(addr string) string {
 
 }
 
+//

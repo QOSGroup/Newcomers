@@ -10,6 +10,7 @@ import (
 )
 // keybase is used to make GetKeyBase a singleton
 var keybase crkeys.Keybase
+const DenomName = "ATOM"
 
 type KeyOutput struct {
 	Name    string `json:"name"`
@@ -17,6 +18,7 @@ type KeyOutput struct {
 	Address string `json:"address"`
 	PubKey  string `json:"pub_key"`
 	Seed    string `json:"seed,omitempty"`
+	Denom  string `json:"denom"`
 }
 
 // SetKeyBase initialized the LCD keybase. It also requires rootDir as input for the directory for key storing.
@@ -33,7 +35,9 @@ func SetKeyBase(rootDir string) crkeys.Keybase {
 }
 
 
-func GetSeed() string {
+func GetSeed(rootDir string) string {
+	//initialize keybase
+	SetKeyBase(rootDir)
 	// algo type defaults to secp256k1
 	algo := crkeys.SigningAlgo("secp256k1")
 	pass := "throwing-this-key-away"
@@ -61,11 +65,14 @@ func errMissingSeed() error {
 }
 
 
-func CreateAccount(name, password, seed string) string {
+func CreateAccount(rootDir, name, password, seed string) string {
 	var (
 		err  error
 		info crkeys.Info
 	)
+	//initialize keybase
+	SetKeyBase(rootDir)
+
 	//check out the input
 	if name == "" {
 		err = errMissingName()
@@ -86,7 +93,7 @@ func CreateAccount(name, password, seed string) string {
 
 	//create account
 	if seed == "" {
-		seed = GetSeed()
+		seed = GetSeed(rootDir)
 	}
 
 
@@ -101,16 +108,20 @@ func CreateAccount(name, password, seed string) string {
 	}
 
 	keyOutput.Seed = seed
-
-	respbyte, _ := json.Marshal(keyOutput)
+	//add new field denom for the coin name
+	var Ko KeyOutput
+	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Seed,DenomName}
+	respbyte, _ := json.Marshal(Ko)
 	return string(respbyte)
 }
 
-func RecoverKey(name,password,seed string) string {
+func RecoverKey(rootDir,name,password,seed string) string {
 	var (
 		err  error
 		info crkeys.Info
 	)
+	//initialize keybase
+	SetKeyBase(rootDir)
 	if name == "" {
 		err = errMissingName()
 		return err.Error()
@@ -137,7 +148,9 @@ func RecoverKey(name,password,seed string) string {
 	}
 
 	keyOutput.Seed = seed
-
-	respbyte, _ := json.Marshal(keyOutput)
+	//add new field denom for the coin name
+	var Ko KeyOutput
+	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Seed,DenomName}
+	respbyte, _ := json.Marshal(Ko)
 	return string(respbyte)
 }

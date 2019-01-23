@@ -29,20 +29,9 @@ mytestnet
 coverage.txt
 profile.out
 
-# Vagrant
-.vagrant/
-*.box
-*.log
-vagrant
-
-# IDE
-.idea/
-*.iml
-
-# Graphviz
-dependency-graph.png
-
-# Latex
-*.aux
-*.out
-*.synctex.gz
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
