@@ -1,26 +1,29 @@
 package sdksource
 
 import (
-	"fmt"
 	"os/user"
 	"testing"
 )
 
 func TestGetAccount(t *testing.T) {
-	addr := "cosmos1a8e4nvxw26c9ug9x687s65vxquszu3j80kdhst"
+	addr := "cosmos1x0pssqzp4tqwf5vktts838em6el694hmmkm4nt"
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-
-	SetParas(rootDir,node,chainId)
-	fmt.Println(Node)
-	acout := GetAccount(addr)
+	acout := GetAccount(rootDir,node,chainId,addr)
 	t.Log(acout)
 }
 
-//func TestInitConfig(t *testing.T) {
-//	usr, _ := user.Current()
-//	rootDir := usr.HomeDir
-//	InitConfig(rootDir)
-//}
+func TestTransfer(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	node := "tcp://localhost:26657"
+	chainId := "test4matt"
+	fromName := "cosmoslcd8"
+	password := "qstars"
+	toStr := "cosmos1fqr280v6x00uylwczh969vyfz4rfwsn5q9pvsg"
+	coinStr := "1token"
+	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr)
+	t.Log(transout)
+}
