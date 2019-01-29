@@ -24,6 +24,7 @@ func TestTransfer(t *testing.T) {
 	password := "qstars"
 	toStr := "cosmos1fqr280v6x00uylwczh969vyfz4rfwsn5q9pvsg"
 	coinStr := "1token"
-	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr)
+	feeStr := "1token"
+	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr)
 	t.Log(transout)
 }

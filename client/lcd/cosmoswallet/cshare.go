@@ -27,3 +27,10 @@ func GetAccount(rootDir,node,chainID,addr string) string {
 	output := sdksource.GetAccount(rootDir,node,chainID,addr)
 	return output
 }
+
+
+//transfer
+func Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr string) string  {
+	output := sdksource.Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr)
+	return output
+}

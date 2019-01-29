@@ -47,7 +47,7 @@ func GetAccount(rootDir,node,chainID,addr string) string {
 }
 
 //complete the whole process with following sequence {Send coins (build -> sign -> send)}
-func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr string) string {
+func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr string) string {
 	//build procedure
 	SetKeyBase(rootDir)
 	//fromName generated from keyspace locally
@@ -94,8 +94,8 @@ func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr string)
 	// build and sign the transaction, then broadcast to Tendermint
 	msg := bankClient.CreateMsg(fromAddr, to, coins)
 
-	//init a txBuilder for the transaction
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc))
+	//init a txBuilder for the transaction with fee
+	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFee(feeStr)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(fromAddr)

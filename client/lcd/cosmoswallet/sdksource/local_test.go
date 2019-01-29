@@ -15,7 +15,7 @@ func TestGetSeed(t *testing.T) {
 func TestCreateAccount(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "transfercall"
+	name := "transfercall1"
 	password := "qstars"
 	seed := "call clip before orchard unveil salute rebel pipe armor dignity topic term rural lady noodle emerge power kite hint curve embody manage tribe pulse"
 	output := CreateAccount(rootDir,name,password,seed)
