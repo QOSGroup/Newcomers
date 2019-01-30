@@ -115,6 +115,7 @@ func CreateAccount(rootDir, name, password, seed string) string {
 	return string(respbyte)
 }
 
+//for recover key with name, password and seed input
 func RecoverKey(rootDir,name,password,seed string) string {
 	var (
 		err  error
@@ -153,4 +154,20 @@ func RecoverKey(rootDir,name,password,seed string) string {
 	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Seed,DenomName}
 	respbyte, _ := json.Marshal(Ko)
 	return string(respbyte)
+}
+
+//for update the password of the name key stored in level db
+func UpdateKey(rootDir, name, oldpass, newpass string) string {
+	SetKeyBase(rootDir)
+
+	getNewpass := func() (string, error) {
+		return newpass, nil
+	}
+
+	err2 := keybase.Update(name, oldpass, getNewpass)
+	if err2 != nil {
+		return err2.Error()
+	}
+	return fmt.Sprintf("Password is successfully updated!")
+
 }

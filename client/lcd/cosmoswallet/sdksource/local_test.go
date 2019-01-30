@@ -31,3 +31,13 @@ func TestRecoverKey(t *testing.T) {
 	output := RecoverKey(rootDir,name,password,seed)
 	t.Log(output)
 }
+
+func TestUpdateKey(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	name := "cosmoslcd8"
+	oldpass := "qstars"
+	newpass := "lcdtest"
+	output := UpdateKey(rootDir, name, oldpass, newpass)
+	t.Log(output)
+}

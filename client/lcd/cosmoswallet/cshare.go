@@ -22,6 +22,12 @@ func RecoverKey(rootDir, name,password,seed string) string {
 	return output
 }
 
+//update password
+func UpdateKey(rootDir, name, oldpass, newpass string) string {
+	output := sdksource.UpdateKey(rootDir, name, oldpass, newpass)
+	return output
+}
+
 //get account info
 func GetAccount(rootDir,node,chainID,addr string) string {
 	output := sdksource.GetAccount(rootDir,node,chainID,addr)

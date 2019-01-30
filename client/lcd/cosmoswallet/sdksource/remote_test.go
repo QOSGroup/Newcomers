@@ -21,7 +21,7 @@ func TestTransfer(t *testing.T) {
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
 	fromName := "cosmoslcd8"
-	password := "qstars"
+	password := "lcdtest"
 	toStr := "cosmos1fqr280v6x00uylwczh969vyfz4rfwsn5q9pvsg"
 	coinStr := "1token"
 	feeStr := "1token"
