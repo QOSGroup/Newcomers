@@ -227,7 +227,7 @@ func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, va
 	return string(resbyte)
 
 }
-//get the delegation share under the specific validator
+//get the delegation share under a specific validator
 func GetDelegationShares(rootDir, node, chainID, delegatorAddr, validatorAddr string) string {
 	//convert the delegator string address to sdk form
 	DelAddr, err := sdk.AccAddressFromBech32(delegatorAddr)
@@ -361,3 +361,128 @@ func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delega
 	return string(resbyte)
 
 }
+
+//get one unbonding delegation
+func GetUnbondingDelegation (rootDir, node, chainID, delegatorAddr, validatorAddr string) string {
+	//convert the delegator string address to sdk form
+	DelAddr, err := sdk.AccAddressFromBech32(delegatorAddr)
+	if err != nil {
+		return err.Error()
+	}
+
+	//convert the validator string address to sdk form
+	ValAddr, err := sdk.ValAddressFromBech32(validatorAddr)
+	if err != nil {
+		return err.Error()
+	}
+
+	//init a context
+	cliCtx := newCLIContext(rootDir,node,chainID).
+		WithCodec(cdc)
+
+	//generate the key for this unbonding delegation
+	key := stake.GetUBDKey(DelAddr, ValAddr)
+	res, err := cliCtx.QueryStore(key, storeStake)
+	if err != nil {
+		return err.Error()
+	}
+
+	// parse out the unbonding delegation
+	ubd := types.MustUnmarshalUBD(cdc, key, res)
+
+	//json output the result
+	output, err := codec.MarshalJSONIndent(cdc, ubd)
+	if err != nil {
+		return err.Error()
+	}
+	return string(output)
+}
+
+//Get bonded validators
+func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
+	//convert the delegator string address to sdk form
+	DelAddr, err := sdk.AccAddressFromBech32(delegatorAddr)
+	if err != nil {
+		return err.Error()
+	}
+
+	//generate paras for next query
+	params := stake.NewQueryDelegatorParams(DelAddr)
+	bz, err := cdc.MarshalJSON(params)
+	if err != nil {
+		return err.Error()
+	}
+
+	//init a context
+	cliCtx := newCLIContext(rootDir,node,chainID).
+		WithCodec(cdc)
+
+	//query with data
+	res, err := cliCtx.QueryWithData("custom/stake/delegatorValidators", bz)
+	if err != nil {
+		return err.Error()
+	}
+
+	return string(res)
+}
+
+//get all the validators
+func GetAllValidators(rootDir, node, chainID string) string {
+	key := stake.ValidatorsKey
+	//init a context
+	cliCtx := newCLIContext(rootDir,node,chainID).
+		WithCodec(cdc)
+
+	resKVs, err := cliCtx.QuerySubspace(key, storeStake)
+	if err != nil {
+		return err.Error()
+	}
+
+	// parse out the validators
+	var validators []stake.Validator
+	for _, kv := range resKVs {
+		addr := kv.Key[1:]
+		validator := types.MustUnmarshalValidator(cdc, addr, kv.Value)
+		validators = append(validators, validator)
+	}
+
+	output, err := codec.MarshalJSONIndent(cdc, validators)
+	if err != nil {
+		return err.Error()
+	}
+	return string(output)
+}
+
+//get all delegations from the delegator
+func GetAllDelegations(rootDir, node, chainID, delegatorAddr string) string {
+	//convert the delegator string address to sdk form
+	DelAddr, err := sdk.AccAddressFromBech32(delegatorAddr)
+	if err != nil {
+		return err.Error()
+	}
+
+	key := stake.GetDelegationsKey(DelAddr)
+	//init a context
+	cliCtx := newCLIContext(rootDir,node,chainID).
+		WithCodec(cdc)
+
+	resKVs, err := cliCtx.QuerySubspace(key, storeStake)
+	if err != nil {
+		return err.Error()
+	}
+
+	// parse out the delegations
+	var delegations []stake.Delegation
+	for _, kv := range resKVs {
+		delegation := types.MustUnmarshalDelegation(cdc, kv.Key, kv.Value)
+		delegations = append(delegations, delegation)
+	}
+
+	output, err := codec.MarshalJSONIndent(cdc, delegations)
+	if err != nil {
+		return err.Error()
+	}
+
+	return string(output)
+}
+
