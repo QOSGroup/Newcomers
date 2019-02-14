@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
-	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/libs/cli"
+
 )
 // keybase is used to make GetKeyBase a singleton
 var keybase crkeys.Keybase
@@ -23,11 +22,8 @@ type KeyOutput struct {
 
 // SetKeyBase initialized the LCD keybase. It also requires rootDir as input for the directory for key storing.
 func SetKeyBase(rootDir string) crkeys.Keybase {
-	viper.Set(cli.HomeFlag, rootDir)
-
 	var err error
-	keybase = nil
-	keybase, err = keys.GetKeyBaseWithWritePerm()
+	keybase, err = keys.NewKeyBaseFromDir(rootDir)
 	if err != nil {
 		fmt.Println(err)
 	}

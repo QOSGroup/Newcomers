@@ -8,9 +8,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cskeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankClient "github.com/cosmos/cosmos-sdk/x/bank/client"
-	"github.com/cosmos/cosmos-sdk/x/stake"
-	"github.com/cosmos/cosmos-sdk/x/stake/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"os"
 )
 
@@ -96,10 +96,10 @@ func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr
 	}
 
 	// build and sign the transaction, then broadcast to Tendermint
-	msg := bankClient.CreateMsg(fromAddr, to, coins)
+	msg := bank.NewMsgSend(fromAddr, to, coins)
 
 	//init a txBuilder for the transaction with fee
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFee(feeStr)
+	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(fromAddr)
@@ -186,7 +186,7 @@ func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, va
 	}
 
 	//build the stake message
-	msg := stake.NewMsgDelegate(DelegatorAddr, ValidatorAddr, Delegation)
+	msg := staking.NewMsgDelegate(DelegatorAddr, ValidatorAddr, Delegation)
 	err = msg.ValidateBasic()
 	if err != nil {
 		return err.Error()
@@ -194,7 +194,7 @@ func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, va
 
 	//sign the stake message
 	//init the txbldr
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFee(feeStr)
+	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(DelegatorAddr)
@@ -250,14 +250,14 @@ func GetDelegationShares(rootDir, node, chainID, delegatorAddr, validatorAddr st
 	}
 
 	// make a query to get the existing delegation shares
-	key := stake.GetDelegationKey(DelAddr, ValAddr)
+	key := staking.GetDelegationKey(DelAddr, ValAddr)
 	res, err := cliCtx.QueryStore(key, storeStake)
 	if err != nil {
 		return err.Error()
 	}
 
 	// parse out the delegation
-	delegation, err := types.UnmarshalDelegation(cdc, key, res)
+	delegation, err := types.UnmarshalDelegation(cdc, res)
 	if err != nil {
 		return err.Error()
 	}
@@ -309,26 +309,26 @@ func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delega
 	}
 
 	// make a query to get the existing delegation shares
-	key := stake.GetDelegationKey(DelegatorAddr, ValidatorAddr)
+	key := staking.GetDelegationKey(DelegatorAddr, ValidatorAddr)
 	res, err := cliCtx.QueryStore(key, storeStake)
 	if err != nil {
 		return err.Error()
 	}
 
 	// parse out the delegation
-	delegation, err := types.UnmarshalDelegation(cdc, key, res)
+	delegation, err := types.UnmarshalDelegation(cdc, res)
 	if err != nil {
 		return err.Error()
 	}
 
 	//create the unbond message
 	sharesAmount := delegation.Shares
-	msg := stake.NewMsgBeginUnbonding(DelegatorAddr, ValidatorAddr, sharesAmount)
+	msg := staking.NewMsgUndelegate(DelegatorAddr, ValidatorAddr, sharesAmount)
 
 	//build-->sign-->broadcast
 	//sign the stake message
 	//init the txbldr
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFee(feeStr)
+	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(DelegatorAddr)
@@ -381,14 +381,14 @@ func GetUnbondingDelegation (rootDir, node, chainID, delegatorAddr, validatorAdd
 		WithCodec(cdc)
 
 	//generate the key for this unbonding delegation
-	key := stake.GetUBDKey(DelAddr, ValAddr)
+	key := staking.GetUBDKey(DelAddr, ValAddr)
 	res, err := cliCtx.QueryStore(key, storeStake)
 	if err != nil {
 		return err.Error()
 	}
 
 	// parse out the unbonding delegation
-	ubd := types.MustUnmarshalUBD(cdc, key, res)
+	ubd := types.MustUnmarshalUBD(cdc, res)
 
 	//json output the result
 	output, err := codec.MarshalJSONIndent(cdc, ubd)
@@ -407,7 +407,7 @@ func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
 	}
 
 	//generate paras for next query
-	params := stake.NewQueryDelegatorParams(DelAddr)
+	params := staking.NewQueryDelegatorParams(DelAddr)
 	bz, err := cdc.MarshalJSON(params)
 	if err != nil {
 		return err.Error()
@@ -428,7 +428,7 @@ func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
 
 //get all the validators
 func GetAllValidators(rootDir, node, chainID string) string {
-	key := stake.ValidatorsKey
+	key := staking.ValidatorsKey
 	//init a context
 	cliCtx := newCLIContext(rootDir,node,chainID).
 		WithCodec(cdc)
@@ -439,11 +439,9 @@ func GetAllValidators(rootDir, node, chainID string) string {
 	}
 
 	// parse out the validators
-	var validators []stake.Validator
+	var validators staking.Validators
 	for _, kv := range resKVs {
-		addr := kv.Key[1:]
-		validator := types.MustUnmarshalValidator(cdc, addr, kv.Value)
-		validators = append(validators, validator)
+		validators = append(validators, types.MustUnmarshalValidator(cdc, kv.Value))
 	}
 
 	output, err := codec.MarshalJSONIndent(cdc, validators)
@@ -461,7 +459,7 @@ func GetAllDelegations(rootDir, node, chainID, delegatorAddr string) string {
 		return err.Error()
 	}
 
-	key := stake.GetDelegationsKey(DelAddr)
+	key := staking.GetDelegationsKey(DelAddr)
 	//init a context
 	cliCtx := newCLIContext(rootDir,node,chainID).
 		WithCodec(cdc)
@@ -472,10 +470,9 @@ func GetAllDelegations(rootDir, node, chainID, delegatorAddr string) string {
 	}
 
 	// parse out the delegations
-	var delegations []stake.Delegation
+	var delegations staking.Delegations
 	for _, kv := range resKVs {
-		delegation := types.MustUnmarshalDelegation(cdc, kv.Key, kv.Value)
-		delegations = append(delegations, delegation)
+		delegations = append(delegations, types.MustUnmarshalDelegation(cdc, kv.Value))
 	}
 
 	output, err := codec.MarshalJSONIndent(cdc, delegations)

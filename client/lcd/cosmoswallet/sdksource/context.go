@@ -2,8 +2,6 @@ package sdksource
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 
@@ -66,15 +64,9 @@ func newCLIContext(rootDir,node,chainID string) context.CLIContext {
 }
 
 // NewTxBuilderFromCLI returns a new initialized TxBuilder with parameters input
-func newTxBuilderFromCLI(chainID string) authtxb.TxBuilder {
-	return authtxb.TxBuilder{
-		ChainID:       chainID,
-		AccountNumber: uint64(viper.GetInt64(client.FlagAccountNumber)),
-		Gas:           client.GasFlagVar.Gas,
-		GasAdjustment: viper.GetFloat64(client.FlagGasAdjustment),
-		Sequence:      uint64(viper.GetInt64(client.FlagSequence)),
-		SimulateGas:   client.GasFlagVar.Simulate,
-		Fee:           viper.GetString(client.FlagFee),
-		Memo:          viper.GetString(client.FlagMemo),
-	}
+func newTxBuilderFromCLI(ChainID string) authtxb.TxBuilder {
+	var txbldr authtxb.TxBuilder
+	txbldr.ChainID() = ChainID
+
+	return txbldr
 }
