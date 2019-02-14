@@ -43,3 +43,28 @@ func TestDelegate(t *testing.T) {
 	delout := Delegate(rootDir, node, chainId, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr)
 	t.Log(delout)
 }
+
+func TestGetDelegationShares(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	node := "tcp://localhost:26657"
+	chainId := "test4matt"
+	delegatorAddr := "cosmos1x0pssqzp4tqwf5vktts838em6el694hmmkm4nt"
+	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
+	getDelout := GetDelegationShares(rootDir,node,chainId,delegatorAddr,validatorAddr)
+	t.Log(getDelout)
+}
+
+func TestUnbondingDelegation(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	node := "tcp://localhost:26657"
+	chainId := "test4matt"
+	delegatorName := "cosmoslcd8"
+	password := "lcdtest"
+	delegatorAddr := "cosmos1x0pssqzp4tqwf5vktts838em6el694hmmkm4nt"
+	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
+	feeStr := "1token"
+	unbondDel := UnbondingDelegation(rootDir, node, chainId, delegatorName, password, delegatorAddr, validatorAddr, feeStr)
+	t.Log(unbondDel)
+}
