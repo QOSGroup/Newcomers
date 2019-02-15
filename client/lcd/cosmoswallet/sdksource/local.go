@@ -9,7 +9,10 @@ import (
 )
 // keybase is used to make GetKeyBase a singleton
 var keybase crkeys.Keybase
-const DenomName = "ATOM"
+const (
+	DenomName = "ATOM"
+	defaultBIP39pass = "12345678"
+	)
 
 type KeyOutput struct {
 	Name    string `json:"name"`
@@ -36,7 +39,7 @@ func GetSeed(rootDir string) string {
 	SetKeyBase(rootDir)
 	// algo type defaults to secp256k1
 	algo := crkeys.SigningAlgo("secp256k1")
-	pass := "throwing-this-key-away"
+	pass := defaultBIP39pass
 	name := "inmemorykey"
 	_, seed, _ := keybase.CreateMnemonic(name, crkeys.English, pass, algo)
 	return seed
@@ -93,7 +96,7 @@ func CreateAccount(rootDir, name, password, seed string) string {
 	}
 
 
-	info, err1 := keybase.CreateKey(name, seed, password)
+	info, err1 := keybase.CreateAccount(name, seed, defaultBIP39pass, password, 0,0)
 	if err1 != nil {
 		return err1.Error()
 	}
@@ -103,10 +106,10 @@ func CreateAccount(rootDir, name, password, seed string) string {
 		return err2.Error()
 	}
 
-	keyOutput.Seed = seed
+	keyOutput.Mnemonic = seed
 	//add new field denom for the coin name
 	var Ko KeyOutput
-	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Seed,DenomName}
+	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Mnemonic,DenomName}
 	respbyte, _ := json.Marshal(Ko)
 	return string(respbyte)
 }
@@ -134,7 +137,7 @@ func RecoverKey(rootDir,name,password,seed string) string {
 	if err != nil {
 		return err.Error()
 	}
-	info, err1 := keybase.CreateKey(name, seed, password)
+	info, err1 := keybase.CreateAccount(name, seed, defaultBIP39pass, password, 0,0)
 	if err1 != nil {
 		return err1.Error()
 	}
@@ -144,10 +147,10 @@ func RecoverKey(rootDir,name,password,seed string) string {
 		return err2.Error()
 	}
 
-	keyOutput.Seed = seed
+	keyOutput.Mnemonic = seed
 	//add new field denom for the coin name
 	var Ko KeyOutput
-	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Seed,DenomName}
+	Ko = KeyOutput{keyOutput.Name, keyOutput.Type, keyOutput.Address,keyOutput.PubKey,keyOutput.Mnemonic,DenomName}
 	respbyte, _ := json.Marshal(Ko)
 	return string(respbyte)
 }
