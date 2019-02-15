@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cskeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -52,7 +53,11 @@ func GetAccount(rootDir,node,chainID,addr string) string {
 
 //complete the whole process with following sequence {Send coins (build -> sign -> send)}
 func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr string) string {
-	//build procedure
+	//get the Keybase
+	//kb, err1 := keys.NewKeyBaseFromDir(rootDir)
+	//if err1 != nil {
+	//	fmt.Println(err1)
+	//}
 	SetKeyBase(rootDir)
 	//fromName generated from keyspace locally
 	if fromName == "" {
@@ -99,7 +104,7 @@ func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr
 	msg := bank.NewMsgSend(fromAddr, to, coins)
 
 	//init a txBuilder for the transaction with fee
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr)
+	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr).WithChainID(chainID)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(fromAddr)
@@ -194,7 +199,7 @@ func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, va
 
 	//sign the stake message
 	//init the txbldr
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr)
+	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr).WithChainID(chainID)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(DelegatorAddr)
@@ -328,7 +333,7 @@ func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delega
 	//build-->sign-->broadcast
 	//sign the stake message
 	//init the txbldr
-	txBldr := newTxBuilderFromCLI(chainID).WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr)
+	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr).WithChainID(chainID)
 
 	//accNum added to txBldr
 	accNum, err := cliCtx.GetAccountNumber(DelegatorAddr)

@@ -26,6 +26,7 @@ type KeyOutput struct {
 // SetKeyBase initialized the LCD keybase. It also requires rootDir as input for the directory for key storing.
 func SetKeyBase(rootDir string) crkeys.Keybase {
 	var err error
+	//keybase = nil
 	keybase, err = keys.NewKeyBaseFromDir(rootDir)
 	if err != nil {
 		fmt.Println(err)

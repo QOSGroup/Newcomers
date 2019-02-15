@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetAccount(t *testing.T) {
-	addr := "cosmos1x0pssqzp4tqwf5vktts838em6el694hmmkm4nt"
+	addr := "cosmos1eet7mg4v8u3lew8vwrtmwpptstn25ysj43q6a6"
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
 	usr, _ := user.Current()
@@ -20,10 +20,10 @@ func TestTransfer(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
-	fromName := "cosmoslcd8"
-	password := "lcdtest"
+	fromName := "local"
+	password := "wm131421"
 	toStr := "cosmos1mrf49r22adtd8juv6kvg8dxly32qlj7rg47644"
-	coinStr := "10token"
+	coinStr := "1stake"
 	feeStr := "1token"
 	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr)
 	t.Log(transout)
@@ -34,9 +34,9 @@ func TestDelegate(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
-	delegatorName := "cosmoslcd8"
-	password := "lcdtest"
-	delegatorAddr := "cosmos1x0pssqzp4tqwf5vktts838em6el694hmmkm4nt"
+	delegatorName := "local"
+	password := "wm131421"
+	delegatorAddr := "cosmos1eet7mg4v8u3lew8vwrtmwpptstn25ysj43q6a6"
 	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
 	delegationCoinStr := "20stake"
 	feeStr := "1token"

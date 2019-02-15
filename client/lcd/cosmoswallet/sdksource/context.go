@@ -5,12 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/tendermint/tendermint/libs/log"
 	tmliteProxy "github.com/tendermint/tendermint/lite/proxy"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 )
 
 
@@ -63,10 +61,26 @@ func newCLIContext(rootDir,node,chainID string) context.CLIContext {
 
 }
 
-// NewTxBuilderFromCLI returns a new initialized TxBuilder with parameters input
-func newTxBuilderFromCLI(ChainID string) authtxb.TxBuilder {
-	var txbldr authtxb.TxBuilder
-	txbldr.ChainID() = ChainID
+// TxBuilder implements a transaction context created in SDK modules.
+//type TxBuilder struct {
+//	txEncoder          sdk.TxEncoder
+//	keybase            crkeys.Keybase
+//	accountNumber      uint64
+//	sequence           uint64
+//	gas                uint64
+//	gasAdjustment      float64
+//	simulateAndExecute bool
+//	chainID            string
+//	memo               string
+//	fees               sdk.Coins
+//	gasPrices          sdk.DecCoins
+//}
 
-	return txbldr
-}
+// NewTxBuilderFromCLI returns a new initialized TxBuilder with parameters input
+//func newTxBuilderFromCLI(ChainID string) authtxb.TxBuilder {
+//	txBldr := authtxb.TxBuilder{
+//		chainID:            ChainID,
+//	}
+//	var txBldr authtxb.TxBuilder
+//	return txBldr
+//}
