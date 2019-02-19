@@ -5,19 +5,19 @@ import (
 	"testing"
 )
 
-func TestGetSeed(t *testing.T) {
+func TestCreateSeed(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	output := GetSeed(rootDir)
+	output := CreateSeed(rootDir)
 	t.Log(output)
 }
 
 func TestCreateAccount(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "local"
+	name := "test21"
 	password := "wm131421"
-	seed := "suggest shaft calm lawn govern sleep budget route demise rotate benefit cake eye dignity label real throw tray noodle client bronze sting hawk drum"
+	seed := ""
 	output := CreateAccount(rootDir,name,password,seed)
 	t.Log(output)
 }
@@ -25,9 +25,9 @@ func TestCreateAccount(t *testing.T) {
 func TestRecoverKey(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "cosmoslcd8"
-	password := "qstars"
-	seed := "blue cash manage net peace diary system wine cool picture minimum earth parent gadget useful dose pear cycle legend buyer leopard spy giggle bamboo"
+	name := "test2"
+	password := "wm131421"
+	seed := "fine vintage pottery fortune brick inherit tiny play child alter unfold region skin few duty false heavy bounce danger corn relax tomato describe audit"
 	output := RecoverKey(rootDir,name,password,seed)
 	t.Log(output)
 }
@@ -35,9 +35,9 @@ func TestRecoverKey(t *testing.T) {
 func TestUpdateKey(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "cosmoslcd8"
-	oldpass := "qstars"
-	newpass := "lcdtest"
+	name := "test2"
+	oldpass := "wm131422"
+	newpass := "wm131421"
 	output := UpdateKey(rootDir, name, oldpass, newpass)
 	t.Log(output)
 }

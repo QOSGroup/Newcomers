@@ -2,6 +2,7 @@ package sdksource
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"os"
 	"path/filepath"
 
@@ -43,6 +44,7 @@ func newCLIContext(rootDir,node,chainID string) context.CLIContext {
 		rpc, log.NewNopLogger(), cacheSize,
 	)
 
+
 	if err != nil {
 		fmt.Printf("Create verifier failed: %s\n", err.Error())
 		fmt.Printf("Please check network connection and verify the address of the node to connect to\n")
@@ -53,7 +55,7 @@ func newCLIContext(rootDir,node,chainID string) context.CLIContext {
 		Client:        rpc,
 		Output:        os.Stdout,
 		NodeURI:       nodeURI,
-		AccountStore:  ctxAccStoreName,
+		AccountStore:  auth.StoreKey,
 		Verifier:      verifier,
 
 	}
