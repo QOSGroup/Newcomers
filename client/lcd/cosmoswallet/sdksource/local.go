@@ -12,7 +12,7 @@ import (
 //var keybase crkeys.Keybase
 const (
 	DenomName = "ATOM"
-	defaultBIP39pass = "12345678"
+	defaultBIP39pass = ""
 	)
 
 type KeyOutput struct {

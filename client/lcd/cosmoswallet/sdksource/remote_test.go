@@ -7,14 +7,12 @@ import (
 
 func TestGetAccount(t *testing.T) {
 	addr := "cosmos1eet7mg4v8u3lew8vwrtmwpptstn25ysj43q6a6"
-	addr2 := "cosmos1nrds9u3kwlsltvk0scayjzq5s6025f25r8l3sf"
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
 	acout := GetAccount(rootDir,node,chainId,addr)
-	acout2 := GetAccount(rootDir,node,chainId,addr2)
-	t.Log(acout,acout2)
+	t.Log(acout)
 }
 
 func TestTransfer(t *testing.T) {
