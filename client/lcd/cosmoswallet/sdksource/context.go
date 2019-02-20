@@ -2,14 +2,10 @@ package sdksource
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"os"
-	"path/filepath"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/tendermint/tendermint/libs/log"
-	tmliteProxy "github.com/tendermint/tendermint/lite/proxy"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	"os"
 )
 
 
@@ -30,33 +26,33 @@ func newCLIContext(rootDir,node,chainID string) context.CLIContext {
 	rpc = rpcclient.NewHTTP(nodeURI, "/websocket")
 
 	//create the verifier for the LCD verification
-	var trustNode bool
-	trustNode = false
-	if trustNode {
-		fmt.Printf("The default value for the trustNode is false!")
-	}
+	//var trustNode bool
+	//trustNode = false
+	//if trustNode {
+	//	fmt.Printf("The default value for the trustNode is false!")
+	//}
 	//chainID := ChainID
 	//home := rootDir
 
-	cacheSize := 10 // TODO: determine appropriate cache size
-	verifier, err := tmliteProxy.NewVerifier(
-		chainID, filepath.Join(rootDir, ".gaiacli", ".gaialite"),
-		rpc, log.NewNopLogger(), cacheSize,
-	)
+	//cacheSize := 10 // TODO: determine appropriate cache size
+	//verifier, err := tmliteProxy.NewVerifier(
+	//	chainID, filepath.Join(rootDir, ".gaiacli", ".gaialite"),
+	//	rpc, log.NewNopLogger(), cacheSize,
+	//)
 
 
-	if err != nil {
-		fmt.Printf("Create verifier failed: %s\n", err.Error())
-		fmt.Printf("Please check network connection and verify the address of the node to connect to\n")
-		os.Exit(1)
-	}
+	//if err != nil {
+	//	fmt.Printf("Create verifier failed: %s\n", err.Error())
+	//	fmt.Printf("Please check network connection and verify the address of the node to connect to\n")
+	//	os.Exit(1)
+	//}
 
 	CliContext := context.CLIContext{
 		Client:        rpc,
 		Output:        os.Stdout,
 		NodeURI:       nodeURI,
 		AccountStore:  auth.StoreKey,
-		Verifier:      verifier,
+		//Verifier:      verifier,
 
 	}
 	return CliContext
