@@ -7,7 +7,7 @@ import (
 
 func TestGetAccount(t *testing.T) {
 	addr := "cosmos1eet7mg4v8u3lew8vwrtmwpptstn25ysj43q6a6"
-	addr2 := "cosmos1m5kchdjjyc7lqrn6tc736vanqs7jtp5rpds4fx"
+	addr2 := "cosmos1nrds9u3kwlsltvk0scayjzq5s6025f25r8l3sf"
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
 	usr, _ := user.Current()
@@ -24,7 +24,7 @@ func TestTransfer(t *testing.T) {
 	chainId := "test4matt"
 	fromName := "local"
 	password := "wm131421"
-	toStr := "cosmos1m5kchdjjyc7lqrn6tc736vanqs7jtp5rpds4fx"
+	toStr := "cosmos1nrds9u3kwlsltvk0scayjzq5s6025f25r8l3sf"
 	coinStr := "10stake"
 	feeStr := "1token"
 	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr)
