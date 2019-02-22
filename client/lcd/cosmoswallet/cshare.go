@@ -36,14 +36,14 @@ func GetAccount(rootDir,node,chainID,addr string) string {
 
 
 //transfer
-func Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr string) string  {
-	output := sdksource.Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr)
+func Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr string, async bool) string  {
+	output := sdksource.Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr,async)
 	return output
 }
 
 //delegate
-func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr string) string {
-	output := sdksource.Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr)
+func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr string, async bool) string {
+	output := sdksource.Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr, async)
 	return output
 }
 
@@ -54,8 +54,8 @@ func GetDelegationShares(rootDir, node, chainID, delegatorAddr, validatorAddr st
 }
 
 //for unbond delegation shares from specific validator
-func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr string) string {
-	output := sdksource.UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr)
+func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr string, async bool) string {
+	output := sdksource.UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr, async)
 	return output
 }
 
@@ -84,13 +84,19 @@ func GetAllDelegations(rootDir, node, chainID, delegatorAddr string) string {
 }
 
 //Withdraw rewards from a specific validator
-func WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr string) string {
-	output := sdksource.WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr)
+func WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr string, async bool) string {
+	output := sdksource.WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr, async)
 	return output
 }
 
 //get a delegation reward between delegator and validator
 func GetDelegationRewards(rootDir, node, chainID, delegatorAddr, validatorAddr string) string {
 	output := sdksource.GetDelegationRewards(rootDir, node, chainID, delegatorAddr, validatorAddr)
+	return output
+}
+
+//query the tx result by txHash generated via async broadcast
+func QueryTx(rootDir,node,chainId,txHash string) string {
+	output := sdksource.QueryTx(rootDir,node,chainId,txHash)
 	return output
 }
