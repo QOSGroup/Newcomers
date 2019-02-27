@@ -10,7 +10,6 @@ import (
 	"log"
 )
 
-const PREF_ADD = "address"
 
 type ResultCreateAccount struct {
 	PubKey   string `json:"pubKey"`
@@ -18,6 +17,7 @@ type ResultCreateAccount struct {
 	Addr     string `json:"addr"`
 	Mnemonic string `json:"mnemonic"`
 	Type     string `json:"type"`
+	Denom    string	`json:"denom"`
 }
 
 type PrivkeyAmino struct {
@@ -34,7 +34,8 @@ const (
 	// Bech32 prefixes
 	//Bech32PrefixAccPub = "cosmosaccpub"
 	AccountResultType = "local"
-	Denomtype         = "qos"
+	DenomQOS         = "qos"
+	PREF_ADD = "address"
 )
 
 func AccountCreate(password string) *ResultCreateAccount {
@@ -76,6 +77,7 @@ func AccountCreate(password string) *ResultCreateAccount {
 	result.Addr = bech32Addr
 	result.Mnemonic = mnemonic
 	result.Type = Type
+	result.Denom = DenomQOS
 
 	return result
 }
@@ -131,6 +133,7 @@ func AccountRecoverStr(mncode, password string) string {
 	result.Addr = bech32Addr
 	result.Mnemonic = mncode
 	result.Type = Type
+	result.Denom = DenomQOS
 
 	resp, _ := respwrap.ResponseWrapper(Cdc, result, nil)
 	out := string(resp)
@@ -218,7 +221,7 @@ func AccountCreateFromSeed(mncode string) string {
 	privkeyAminoStr := privkeyAminoStc.Value
 
 	Type := AccountResultType
-	Denom := Denomtype
+	Denom := DenomQOS
 
 	result := &AccountKeyOut{}
 	result.PubKey = pubkeyAminoStr
