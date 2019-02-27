@@ -1,6 +1,9 @@
 package cosmoswallet
 
-import "github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/sdksource"
+import (
+	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/sdksource"
+	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim"
+)
 
 
 //create the seed(mnemonic) for the account generation
@@ -98,5 +101,90 @@ func GetDelegationRewards(rootDir, node, chainID, delegatorAddr, validatorAddr s
 //query the tx result by txHash generated via async broadcast
 func QueryTx(rootDir,node,chainId,txHash string) string {
 	output := sdksource.QueryTx(rootDir,node,chainId,txHash)
+	return output
+}
+
+//QOS wallet part begin from here
+func QOSAccountCreate(password string) string {
+	output := slim.AccountCreateStr(password)
+	return output
+}
+
+func QOSAccountCreateFromSeed(mncode string) string {
+	output := slim.AccountCreateFromSeed(mncode)
+	return output
+}
+
+//for QSCKVStoreset
+func QSCKVStoreSet(k, v, privkey, chain string) string {
+	output := slim.QSCKVStoreSetPost(k, v, privkey, chain)
+	return output
+}
+
+//for QSCKVStoreGet
+func QSCKVStoreGet(k string) string {
+	output := slim.QSCKVStoreGetQuery(k)
+	return output
+}
+
+//for QSCQueryAccount
+func QSCQueryAccount(addr string) string {
+	output := slim.QSCQueryAccountGet(addr)
+	return output
+}
+
+//for QOSQueryAccount
+func QOSQueryAccount(addr string) string {
+	output := slim.QOSQueryAccountGet(addr)
+	return output
+}
+
+//for AccountRecovery
+func QOSAccountRecover(mncode, password string) string {
+	output := slim.AccountRecoverStr(mncode, password)
+	return output
+}
+
+//for IP input
+func QOSSetBlockchainEntrance(sh, mh string) {
+	slim.SetBlockchainEntrance(sh, mh)
+}
+
+//for PubAddrRetrieval
+func QOSPubAddrRetrieval(priv string) string {
+	//	fmt.Println("Please input host including IP and port for initialization on Qstar deamon:")
+	output := slim.PubAddrRetrievalStr(priv)
+	return output
+}
+
+//for QSCtransferSend
+func QSCtransferSend(addrto, coinstr, privkey, chainid string) string {
+	output := slim.QSCtransferSendStr(addrto, coinstr, privkey, chainid)
+	return output
+}
+
+//for QOSCommitResultCheck
+func QOSCommitResultCheck(txhash, height string) string {
+	output := slim.QOSCommitResultCheck(txhash, height)
+	return output
+}
+
+func QOSJQInvestAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) string {
+	output := slim.JQInvestAd(QOSchainId, QSCchainId, articleHash, coins, privatekey)
+	return output
+}
+
+func QOSAesEncrypt(key, plainText string) string {
+	output := slim.AesEncrypt(key, plainText)
+	return output
+}
+
+func QOSAesDecrypt(key, cipherText string) string {
+	output := slim.AesDecrypt(key, cipherText)
+	return output
+}
+
+func QOSTransferRecordsQuery(chainid, addr, cointype, offset, limit string) string {
+	output := slim.TransferRecordsQuery(chainid, addr, cointype, offset, limit)
 	return output
 }
