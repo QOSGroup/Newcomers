@@ -104,6 +104,11 @@ func QueryTx(rootDir,node,chainId,txHash string) string {
 	return output
 }
 
+func GetValSelfBondShares (rootDir, node, chainID, validatorAddr string) string {
+	output := sdksource.GetValSelfBondShares(rootDir, node, chainID, validatorAddr)
+	return output
+}
+
 //QOS wallet part begin from here
 func QOSAccountCreate(password string) string {
 	output := slim.AccountCreateStr(password)

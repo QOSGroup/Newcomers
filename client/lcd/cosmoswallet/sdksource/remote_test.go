@@ -22,7 +22,7 @@ func TestTransfer(t *testing.T) {
 	chainId := "test4matt"
 	fromName := "local"
 	password := "wm131421"
-	toStr := "cosmos1u4mxu4u52qgdxn56kuaew4jr6ewr2g2yxe2vcx"
+	toStr := "cosmos15ncwsu4mf5528l68u8y0hdphug3qagfh5trxgf"
 	coinStr := "10stake"
 	feeStr := "1token"
 	async := true
@@ -51,7 +51,7 @@ func TestGetDelegationShares(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
-	delegatorAddr := "cosmos1ecnlyjrd4wr724wczxsjvgrkcq4f2sudq08cun"
+	delegatorAddr := "cosmos1a8e4nvxw26c9ug9x687s65vxquszu3j80kdhst"
 	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
 	getDelout := GetDelegationShares(rootDir,node,chainId,delegatorAddr,validatorAddr)
 	t.Log(getDelout)
@@ -146,4 +146,14 @@ func TestQueryTx(t *testing.T) {
 	txHash := "C016A0DDF11CA1BBFB4A111A09B8497AC7E3915EAE4B50A9B5DF86C455F6FDE7"
 	qTx := QueryTx(rootDir,node,chainId,txHash)
 	t.Log(qTx)
+}
+
+func TestGetValSelfBondShares(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	node := "tcp://localhost:26657"
+	chainId := "test4matt"
+	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
+	vsb := GetValSelfBondShares(rootDir, node, chainId, validatorAddr)
+	t.Log(vsb)
 }

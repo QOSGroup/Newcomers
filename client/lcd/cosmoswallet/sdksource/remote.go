@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/bech32"
 	"github.com/tendermint/tendermint/libs/cli"
 	"os"
 )
@@ -668,4 +669,12 @@ func QueryTx(rootDir,Node,chainID,Txhash string) string {
 	resp, _ := cdc.MarshalJSON(info)
 	return string(resp)
 
+}
+
+//get validator self bond shares
+func GetValSelfBondShares (rootDir, node, chainID, validatorAddr string) string {
+	//get the delegator string address from validatorAddr as self delegation
+	_, valb, _ := bech32.DecodeAndConvert(validatorAddr)
+	delegatorAddr, _ := bech32.ConvertAndEncode("cosmos", valb)
+	return GetDelegationShares(rootDir, node, chainID, delegatorAddr, validatorAddr)
 }
