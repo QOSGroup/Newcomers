@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetAccount(t *testing.T) {
-	addr := "cosmos1ecnlyjrd4wr724wczxsjvgrkcq4f2sudq08cun"
+	addr := "cosmos1eet7mg4v8u3lew8vwrtmwpptstn25ysj43q6a6"
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
 	usr, _ := user.Current()
@@ -22,10 +22,10 @@ func TestTransfer(t *testing.T) {
 	chainId := "test4matt"
 	fromName := "local"
 	password := "wm131421"
-	toStr := "cosmos15ncwsu4mf5528l68u8y0hdphug3qagfh5trxgf"
-	coinStr := "10stake"
+	toStr := "cosmos1uzsu64daw0javd5ntg7ee64pj7frfx46xs7684"
+	coinStr := "1000000stake"
 	feeStr := "1token"
-	async := true
+	async := false
 	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr, async)
 	t.Log(transout)
 }
@@ -39,8 +39,8 @@ func TestDelegate(t *testing.T) {
 	password := "wm131421"
 	delegatorAddr := "cosmos1ecnlyjrd4wr724wczxsjvgrkcq4f2sudq08cun"
 	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
-	delegationCoinStr := "10000stake"
-	feeStr := "1token"
+	delegationCoinStr := "100stake"
+	feeStr := "2token"
 	async := false
 	delout := Delegate(rootDir, node, chainId, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr, async)
 	t.Log(delout)
@@ -62,9 +62,9 @@ func TestUnbondingDelegation(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
-	delegatorName := "local"
+	delegatorName := "testunbond"
 	password := "wm131421"
-	delegatorAddr := "cosmos1eet7mg4v8u3lew8vwrtmwpptstn25ysj43q6a6"
+	delegatorAddr := "cosmos1ecnlyjrd4wr724wczxsjvgrkcq4f2sudq08cun"
 	validatorAddr := "cosmosvaloper1a8e4nvxw26c9ug9x687s65vxquszu3j82zezuc"
 	feeStr := "1token"
 	async := false
@@ -143,7 +143,7 @@ func TestQueryTx(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://localhost:26657"
 	chainId := "test4matt"
-	txHash := "C016A0DDF11CA1BBFB4A111A09B8497AC7E3915EAE4B50A9B5DF86C455F6FDE7"
+	txHash := "0BA029449967228DB14E7ECCFF9B97C5963807DB07D32CF180CBD545BBE59CFC"
 	qTx := QueryTx(rootDir,node,chainId,txHash)
 	t.Log(qTx)
 }
