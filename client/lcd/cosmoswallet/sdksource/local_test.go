@@ -15,7 +15,7 @@ func TestCreateSeed(t *testing.T) {
 func TestCreateAccount(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "fp3"
+	name := "c33test"
 	password := "wm131421"
 	seed := ""
 	output := CreateAccount(rootDir,name,password,seed)
@@ -25,9 +25,9 @@ func TestCreateAccount(t *testing.T) {
 func TestRecoverKey(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "test2213"
+	name := "c33banker"
 	password := "wm131421"
-	seed := "math away vicious collect pole few reduce undo meadow dawn mesh nature pet guide valve behave hammer paddle number battle flavor two urge concert"
+	seed := "you picnic budget turkey cost napkin toss replace rail worry spatial expose scorpion call ship echo include because hurdle medal road forward member door"
 	output := RecoverKey(rootDir,name,password,seed)
 	t.Log(output)
 }
@@ -35,9 +35,9 @@ func TestRecoverKey(t *testing.T) {
 func TestUpdateKey(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	name := "test2"
-	oldpass := "wm131422"
-	newpass := "wm131421"
+	name := "c33"
+	oldpass := "wm131421"
+	newpass := "wm131422"
 	output := UpdateKey(rootDir, name, oldpass, newpass)
 	t.Log(output)
 }

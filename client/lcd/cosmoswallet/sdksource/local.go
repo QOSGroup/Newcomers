@@ -11,7 +11,7 @@ import (
 // keybase is used to make GetKeyBase a singleton
 //var keybase crkeys.Keybase
 const (
-	DenomName = "ATOM"
+	DenomName = "uatom"
 	defaultBIP39pass = ""
 	)
 
@@ -124,7 +124,7 @@ func CreateAccount(rootDir, name, password, seed string) string {
 		return err1.Error()
 	}
 
-	keyOutput, err2 := keys.Bech32KeyOutput(info)
+	keyOutput, err2 := crkeys.Bech32KeyOutput(info)
 	if err2 != nil {
 		return err2.Error()
 	}
@@ -171,7 +171,7 @@ func RecoverKey(rootDir,name,password,seed string) string {
 		return err1.Error()
 	}
 
-	keyOutput, err2 := keys.Bech32KeyOutput(info)
+	keyOutput, err2 := crkeys.Bech32KeyOutput(info)
 	if err2 != nil {
 		return err2.Error()
 	}
