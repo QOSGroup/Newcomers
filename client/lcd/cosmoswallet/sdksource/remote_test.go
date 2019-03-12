@@ -20,10 +20,10 @@ func TestTransfer(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://192.168.1.184:26657"
 	chainId := "cosmosv33"
-	fromName := "c33test"
+	fromName := "c33banker"
 	password := "wm131421"
-	toStr := "cosmos1cpdcgxsh6tmqvyp2zp2k2gvlnlq8zmlj9aetqw"
-	coinStr := "1000stake"
+	toStr := "cosmos1e5yhp5lkhjuautf4mhhll7l733za8tgpj329d9"
+	coinStr := "10000000stake"
 	feeStr := "1stake"
 	async := false
 	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr, async)
