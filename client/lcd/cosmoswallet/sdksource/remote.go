@@ -678,3 +678,79 @@ func GetValSelfBondShares (rootDir, node, chainID, validatorAddr string) string 
 	delegatorAddr, _ := bech32.ConvertAndEncode("cosmos", valb)
 	return GetDelegationShares(rootDir, node, chainID, delegatorAddr, validatorAddr)
 }
+//rewardcoins type sdk.Coins
+type Delrewards struct {
+	RewardsCoins 	sdk.DecCoins		`json:"rewards_coins"`
+	Shares			sdk.Dec				`json:"delegation_shares"`
+	ValidatorAddr 	sdk.ValAddress		`json:"validator_addr"`
+}
+
+//get all the delegation awards list including delegation ties
+func GetDelegtorRewardsShares(rootDir, node, chainID, delegatorAddr string) string {
+	//convert the delegator string address to sdk form
+	DelAddr, err := sdk.AccAddressFromBech32(delegatorAddr)
+	if err != nil {
+		return err.Error()
+	}
+
+	//to be fixed, the trust-node was set true to passby the verifier function, need improvement
+	async := false
+	cliCtx := newCLIContext(rootDir,node,chainID,async).
+		WithCodec(cdc).
+		WithAccountDecoder(cdc).WithTrustNode(true)
+	if err := cliCtx.EnsureAccountExistsFromAddr(DelAddr); err != nil {
+		return err.Error()
+	}
+
+	//get all the validators with delegation of the specific delegator
+	ValAddrs, err := cliCtx.QueryWithData("custom/distr/delegator_validators", cdc.MustMarshalJSON(distr.NewQueryDelegatorParams(DelAddr)))
+	if err != nil {
+		return err.Error()
+	}
+	var validators []sdk.ValAddress
+	if err := cdc.UnmarshalJSON(ValAddrs, &validators); err != nil {
+		return err.Error()
+	}
+
+	var delrews []Delrewards
+	//query the delegation rewards
+	for _, valAddr := range validators{
+		rewards, err := cliCtx.QueryWithData("custom/distr/delegation_rewards", cdc.MustMarshalJSON(distr.NewQueryDelegationRewardsParams(DelAddr, valAddr)))
+		if err != nil {
+			return err.Error()
+		}
+		var rewardsresult sdk.DecCoins
+		cdc.MustUnmarshalJSON(rewards, &rewardsresult)
+
+		// make a query to get the existing delegation shares
+		key := staking.GetDelegationKey(DelAddr, valAddr)
+		res, err := cliCtx.QueryStore(key, storeStake)
+		if err != nil {
+			return err.Error()
+		}
+
+		// parse out the delegation
+		delegation, err := types.UnmarshalDelegation(cdc, res)
+		if err != nil {
+			return err.Error()
+		}
+
+		//create the unbond message
+		sharesAmount := delegation.Shares
+
+		delrew := Delrewards{
+			rewardsresult,
+			sharesAmount,
+			valAddr,
+		}
+
+		delrews = append(delrews,delrew)
+
+	}
+	respbyte, err := cdc.MarshalJSON(delrews)
+	if err != nil {
+		return err.Error()
+	}
+	return string(respbyte)
+
+}
