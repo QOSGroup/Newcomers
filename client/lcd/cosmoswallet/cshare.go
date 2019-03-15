@@ -109,6 +109,11 @@ func GetValSelfBondShares (rootDir, node, chainID, validatorAddr string) string 
 	return output
 }
 
+func GetDelegtorRewardsShares(rootDir,node,chainId,delegatorAddr string) string {
+	output := sdksource.GetDelegtorRewardsShares(rootDir,node,chainId,delegatorAddr)
+	return output
+}
+
 //QOS wallet part begin from here
 func QOSAccountCreate(password string) string {
 	output := slim.AccountCreateStr(password)
