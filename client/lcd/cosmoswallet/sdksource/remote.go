@@ -448,12 +448,55 @@ func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
 		WithCodec(cdc).WithTrustNode(true)
 
 	//query with data
-	res, err := cliCtx.QueryWithData("custom/staking/delegatorValidators", bz)
+	valids, err := cliCtx.QueryWithData("custom/staking/delegatorValidators", bz)
 	if err != nil {
 		return err.Error()
 	}
 
-	return string(res)
+	var validators []staking.Validator
+	if err := cdc.UnmarshalJSON(valids, &validators); err != nil {
+		return err.Error()
+	}
+
+	var validplus []ValidPlus
+	for _, valid := range validators{
+		valAddr := valid.GetOperator()
+		bz := valAddr.Bytes()
+		//var accAddr sdk.AccAddress
+		accAddr := sdk.AccAddress(bz)
+		//cdc.MustUnmarshalJSON(bz,&accAddr)
+		// make a query to get the existing delegation shares
+		key := staking.GetDelegationKey(accAddr, valAddr)
+		res, err := cliCtx.QueryStore(key, storeStake)
+		if err != nil {
+			return err.Error()
+		}
+
+		// parse out the delegation
+		delegation, err := types.UnmarshalDelegation(cdc, res)
+		if err != nil {
+			return err.Error()
+		}
+
+		//get the share amount
+		sharesAmount := delegation.Shares
+		validp := ValidPlus{
+			valid,
+			sharesAmount,
+		}
+		validplus = append(validplus,validp)
+	}
+
+	output, err := cdc.MarshalJSON(validplus)
+	if err != nil {
+		return err.Error()
+	}
+	return string(output)
+}
+
+type ValidPlus struct {
+	Validator       staking.Validator  `json:"validator"`
+	SelfBondShares  sdk.Dec			   `json:"selfbond_shares"`
 }
 
 //get all the validators
@@ -469,13 +512,41 @@ func GetAllValidators(rootDir, node, chainID string) string {
 		return err.Error()
 	}
 
-	// parse out the validators
-	var validators staking.Validators
+	var validplus []ValidPlus
 	for _, kv := range resKVs {
-		validators = append(validators, types.MustUnmarshalValidator(cdc, kv.Value))
+		//validators = append(validators, types.MustUnmarshalValidator(cdc, kv.Value))
+
+		//fetch the validator info from the key
+
+		valid := types.MustUnmarshalValidator(cdc, kv.Value)
+		valAddr := valid.OperatorAddress
+		bz := valAddr.Bytes()
+		//var accAddr sdk.AccAddress
+		accAddr := sdk.AccAddress(bz)
+		//cdc.MustUnmarshalJSON(bz,&accAddr)
+		// make a query to get the existing delegation shares
+		key := staking.GetDelegationKey(accAddr, valAddr)
+		res, err := cliCtx.QueryStore(key, storeStake)
+		if err != nil {
+			return err.Error()
+		}
+
+		// parse out the delegation
+		delegation, err := types.UnmarshalDelegation(cdc, res)
+		if err != nil {
+			return err.Error()
+		}
+
+		//get the share amount
+		sharesAmount := delegation.Shares
+		validp := ValidPlus{
+			valid,
+			sharesAmount,
+		}
+		validplus = append(validplus,validp)
 	}
 
-	output, err := codec.MarshalJSONIndent(cdc, validators)
+	output, err := cdc.MarshalJSON(validplus)
 	if err != nil {
 		return err.Error()
 	}

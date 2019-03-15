@@ -22,8 +22,8 @@ func TestTransfer(t *testing.T) {
 	chainId := "cosmosv33"
 	fromName := "c33banker"
 	password := "wm131421"
-	toStr := "cosmos1duqu4jkd0gfntc0zffl3elc0ydve9hgaavtgyy"
-	coinStr := "10000000 stake"
+	toStr := "cosmos1kklk4eqye6pla97dzmc03pw5lst7x0n4zt8syw"
+	coinStr := "100000000 stake"
 	feeStr := "1stake"
 	async := false
 	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr, async)
@@ -39,7 +39,7 @@ func TestDelegate(t *testing.T) {
 	password := "wm131421"
 	delegatorAddr := "cosmos1fqnc6mzrz7slm74cmh2mcxngllqujvm7y2lzfj"
 	validatorAddr := "cosmosvaloper1yqlq9kg2txmwc606apvmen0ssag20dsfvnaq0v"
-	delegationCoinStr := "3000000stake"
+	delegationCoinStr := "300000stake"
 	feeStr := "1stake"
 	async := true
 	delout := Delegate(rootDir, node, chainId, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr, async)
