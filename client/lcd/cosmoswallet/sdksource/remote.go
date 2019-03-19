@@ -472,17 +472,22 @@ func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
 			return err.Error()
 		}
 
+		var validp ValidPlus
 		// parse out the delegation
 		delegation, err := types.UnmarshalDelegation(cdc, res)
 		if err != nil {
-			return err.Error()
-		}
+			sharesAmount := "0"
+			validp = ValidPlus{
+				valid,
+				sharesAmount,
+			}
+		} else {
+			sharesAmount := delegation.Shares.String()
+			validp = ValidPlus{
+				valid,
+				sharesAmount,
+			}
 
-		//get the share amount
-		sharesAmount := delegation.Shares
-		validp := ValidPlus{
-			valid,
-			sharesAmount,
 		}
 		validplus = append(validplus,validp)
 	}
@@ -496,7 +501,7 @@ func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
 
 type ValidPlus struct {
 	Validator       staking.Validator  `json:"validator"`
-	SelfBondShares  sdk.Dec			   `json:"selfbond_shares"`
+	SelfBondShares  string			   `json:"selfbond_shares"`
 }
 
 //get all the validators
@@ -531,17 +536,22 @@ func GetAllValidators(rootDir, node, chainID string) string {
 			return err.Error()
 		}
 
+		var validp ValidPlus
 		// parse out the delegation
 		delegation, err := types.UnmarshalDelegation(cdc, res)
 		if err != nil {
-			return err.Error()
-		}
+			sharesAmount := "0"
+			validp = ValidPlus{
+				valid,
+				sharesAmount,
+			}
+		} else {
+			sharesAmount := delegation.Shares.String()
+			validp = ValidPlus{
+				valid,
+				sharesAmount,
+			}
 
-		//get the share amount
-		sharesAmount := delegation.Shares
-		validp := ValidPlus{
-			valid,
-			sharesAmount,
 		}
 		validplus = append(validplus,validp)
 	}
