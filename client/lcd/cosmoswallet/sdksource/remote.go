@@ -449,6 +449,11 @@ func GetBondValidators(rootDir, node, chainID, delegatorAddr string) string {
 
 	//query with data
 	valids, err := cliCtx.QueryWithData("custom/staking/delegatorValidators", bz)
+	//return specific info if there is no delegation between them
+	fmt.Println(valids)
+	if len(valids) <= 2 {
+		return fmt.Sprintf("None of validators delegated!")
+	}
 	if err != nil {
 		return err.Error()
 	}
