@@ -56,11 +56,19 @@ func QSCKVStoreSetPost(k, v, privkey, chain string) (result string) {
 	body := bytes.NewBuffer(payload)
 	req, _ := http.NewRequest("POST", KVurl, body)
 	req.Header.Set("Content-Type", "application/json")
-	clt := http.Client{}
-	resp, _ := clt.Do(req)
+	//get the origin codes from the standard net/http package
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer resp.Body.Close()
-	rep, _ := ioutil.ReadAll(resp.Body)
-	output := string(rep)
+
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	output := string(respBody)
 	//fmt.Println(output)
 	return output
 }
