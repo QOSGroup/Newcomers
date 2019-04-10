@@ -82,3 +82,29 @@ func newCLIContext(rootDir,node,chainID string, async bool) context.CLIContext {
 //	var txBldr authtxb.TxBuilder
 //	return txBldr
 //}
+
+//node discovery with round-robin algorithm
+//var i = 0
+//var servers = []string{"127.0.0.1:8000", "127.0.0.1:8001", "127.0.0.1:8003"}
+//
+//// Balance returns one of the servers based using round-robin algorithm
+//func Balance() string {
+//	server := servers[i]
+//	i++
+//
+//	// it means that we reached the end of servers
+//	// and we need to reset the counter and start
+//	// from the beginning
+//	if i >= len(servers) {
+//		i = 0
+//	}
+//	return server
+//}
+//
+//
+//func main() {
+//	// requests loop
+//	for i := 0; i < 20; i++ {
+//		fmt.Println(Balance())
+//	}
+//}
