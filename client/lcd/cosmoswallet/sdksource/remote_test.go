@@ -23,9 +23,9 @@ func TestTransfer(t *testing.T) {
 	fromName := "c33banker"
 	password := "wm131421"
 	toStr := "cosmos1kklk4eqye6pla97dzmc03pw5lst7x0n4zt8syw"
-	coinStr := "100000000 stake"
+	coinStr := "1000 stake"
 	feeStr := "1stake"
-	async := false
+	async := true
 	transout := Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr, async)
 	t.Log(transout)
 }

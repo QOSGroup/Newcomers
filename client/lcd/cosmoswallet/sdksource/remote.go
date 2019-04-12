@@ -145,6 +145,9 @@ func Transfer(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr
 	}
 	// broadcast to a Tendermint node
 	res, err := cliCtx.BroadcastTx(txBytes)
+	//tmhash to fetch the txhash before broadcast to chain
+	//txhash := tmhash.Sum(txBytes)
+	//fmt.Println(strings.ToUpper(hex.EncodeToString(txhash)))
 	if err != nil {
 		return err.Error()
 	}
