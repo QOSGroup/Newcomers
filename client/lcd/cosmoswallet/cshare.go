@@ -204,6 +204,11 @@ func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, 
 	return output
 }
 
+func BroadcastTransferTx(rootDir, node, chainID, txString string, async bool) string {
+	output := sdksource.BroadcastTransferTx(rootDir, node, chainID, txString, async)
+	return output
+}
+
 //for AdvertisersTrue
 func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
 	output := slim.AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce )

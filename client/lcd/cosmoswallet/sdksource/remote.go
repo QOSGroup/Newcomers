@@ -923,3 +923,22 @@ func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, 
 	}
 	return string(txBytes)
 }
+
+//broadcast the tx
+func BroadcastTransferTx(rootDir, node, chainID, txString string, async bool) string {
+	//initiate context
+	cliCtx := newCLIContext(rootDir,node,chainID,async).
+		WithCodec(cdc).
+		WithAccountDecoder(cdc).WithTrustNode(true)
+	// broadcast to a Tendermint node
+	txBytes := []byte(txString)
+	res, err := cliCtx.BroadcastTx(txBytes)
+	if err != nil {
+		return err.Error()
+	}
+	resbyte, err := cdc.MarshalJSON(res)
+	if err != nil {
+		return err.Error()
+	}
+	return string(resbyte)
+}
