@@ -198,3 +198,22 @@ func QOSTransferRecordsQuery(chainid, addr, cointype, offset, limit string) stri
 	output := slim.TransferRecordsQuery(chainid, addr, cointype, offset, limit)
 	return output
 }
+
+
+//for AdvertisersTrue
+func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
+	output := slim.AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce )
+	return output
+}
+
+//for AdvertisersFalse
+func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
+	output := slim.AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid, qscnonce )
+	return output
+}
+
+//for GetTx
+func GetTx(tx string)string{
+	output := slim.GetTx( tx )
+	return output
+}

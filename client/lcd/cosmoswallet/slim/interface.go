@@ -3,12 +3,14 @@ package slim
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim/funcInlocal/bech32local"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim/funcInlocal/ed25519local"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim/funcInlocal/respwrap"
 	"github.com/pkg/errors"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -821,4 +823,11 @@ func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce st
 func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
 	qsc, _ := strconv.ParseInt(qscnonce, 10, 64)
 	return Advertisers(coinAmount,privatekey,coinsType,"1",qscchainid,qsc)
+}
+
+
+func GetTx(tx string)string{
+	txBytes:=[]byte(tx)
+	txhashs := strings.ToUpper(hex.EncodeToString(tmhash.Sum(txBytes)))
+    return string(txhashs)
 }
