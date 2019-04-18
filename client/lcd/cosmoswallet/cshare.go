@@ -199,6 +199,10 @@ func QOSTransferRecordsQuery(chainid, addr, cointype, offset, limit string) stri
 	return output
 }
 
+func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr string, async bool) string {
+	output := sdksource.TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr, async)
+	return output
+}
 
 //for AdvertisersTrue
 func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {

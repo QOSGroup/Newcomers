@@ -843,3 +843,83 @@ func GetDelegtorRewardsShares(rootDir, node, chainID, delegatorAddr string) stri
 	return string(respbyte)
 
 }
+
+//Only partial process with following sequence {Send coins (build -> sign -> Not send)}
+func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr string, async bool) string {
+	//get the Keybase
+	viper.Set(cli.HomeFlag, rootDir)
+	kb, err1 := keys.NewKeyBaseFromHomeFlag()
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	//SetKeyBase(rootDir)
+	//fromName generated from keyspace locally
+	if fromName == "" {
+		fmt.Println("no fromName input!")
+	}
+	var info cskeys.Info
+	var err error
+	info, err = kb.Get(fromName)
+	if err != nil {
+		fmt.Printf("could not find key %s\n", fromName)
+		os.Exit(1)
+	}
+
+	fromAddr := info.GetAddress()
+	cliCtx := newCLIContext(rootDir,node,chainID,async).
+		WithCodec(cdc).
+		WithAccountDecoder(cdc).WithTrustNode(true)
+	if err := cliCtx.EnsureAccountExistsFromAddr(fromAddr); err != nil {
+		return err.Error()
+	}
+
+	to, err := sdk.AccAddressFromBech32(toStr)
+	if err != nil {
+		return err.Error()
+	}
+
+	// parse coins trying to be sent
+	coins, err := sdk.ParseCoins(coinStr)
+	if err != nil {
+		return err.Error()
+	}
+
+	account, err := cliCtx.GetAccount(fromAddr)
+	if err != nil {
+		return err.Error()
+	}
+
+	// ensure account has enough coins
+	if !account.GetCoins().IsAllGTE(coins) {
+		return fmt.Sprintf("Address %s doesn't have enough coins to pay for this transaction.", fromAddr)
+	}
+
+	// build and sign the transaction, then broadcast to Tendermint
+	msg := bank.NewMsgSend(fromAddr, to, coins)
+
+	//init a txBuilder for the transaction with fee
+	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc)).WithFees(feeStr).WithChainID(chainID)
+	//txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc)).WithGasPrices(feeStr).WithChainID(chainID)
+
+	//accNum added to txBldr
+	accNum, err := cliCtx.GetAccountNumber(fromAddr)
+	if err != nil {
+		return err.Error()
+	}
+	txBldr = txBldr.WithAccountNumber(accNum)
+
+	//accSequence added
+	accSeq, err := cliCtx.GetAccountSequence(fromAddr)
+	if err != nil {
+		return err.Error()
+	}
+	txBldr = txBldr.WithSequence(accSeq)
+
+
+	// build and sign the transaction
+	txBytes, err := txBldr.BuildAndSign(fromName, password, []sdk.Msg{msg})
+	if err != nil {
+		return err.Error()
+	}
+	return string(txBytes)
+}
