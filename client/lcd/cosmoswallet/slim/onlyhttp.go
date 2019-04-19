@@ -3,9 +3,12 @@ package slim
 import (
 	"bytes"
 	"fmt"
+	"github.com/tendermint/tendermint/libs/common"
 	"io/ioutil"
 	"log"
 	"net/http"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	"errors"
 )
 
 type sendKVReq struct {
@@ -25,6 +28,7 @@ var (
 	KVurl         string
 	QResulturl    string
 	TRurl         string
+	RPC rpcclient.Client
 )
 
 //set Block Chain entrance hosts for both Qstars and Qmoon
@@ -37,6 +41,9 @@ func SetBlockchainEntrance(qstarshost, qmoonhost string) {
 	KVurl = "http://" + Shost + "/kv/"
 	QResulturl = "http://" + Shost + "/commits/"
 	TRurl = "http://" + Mhost + "/nodes/"
+
+	RPC = rpcclient.NewHTTP(Shost, "/websocket")
+
 
 }
 
@@ -160,4 +167,23 @@ func TransferRecordsQuery(chainid, addr, cointype, offset, limit string) string 
 	defer resp.Body.Close()
 	output := string(body)
 	return output
+}
+
+
+
+func Query(path string, key common.HexBytes) (res []byte, err error) {
+	opts := rpcclient.ABCIQueryOptions{
+		Height: 0,
+		Prove:  false,
+	}
+	result, err := RPC.ABCIQueryWithOptions(path, key, opts)
+	if err != nil {
+		return res, err
+	}
+	resp := result.Response
+	if !resp.IsOK() {
+		return res, errors.New("error query")
+	}
+
+	return resp.Value, nil
 }

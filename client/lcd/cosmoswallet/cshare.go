@@ -1,8 +1,11 @@
 package cosmoswallet
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/sdksource"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim"
+	"strings"
 )
 
 
@@ -226,3 +229,27 @@ func GetTx(tx string)string{
 	output := slim.GetTx( tx )
 	return output
 }
+
+
+func GetBlance(addrs string)string{
+	path := fmt.Sprintf("/store/%s/%s", "aoeaccount", "key")
+	output,_ := slim.Query(path,[]byte(addrs))
+	return string (output)
+}
+
+
+func GetBlanceByCointype(addrs ,cointype string)slim.BigInt{
+	result:=GetBlance(addrs)
+    var qsc slim.QSCs
+	json.Unmarshal([]byte(result),&qsc)
+
+	for _,v:=range qsc{
+		if strings.ToUpper(v.Name)==strings.ToUpper(cointype){
+			return v.Amount
+		}
+	}
+	return slim.ZeroInt()
+}
+
+
+
