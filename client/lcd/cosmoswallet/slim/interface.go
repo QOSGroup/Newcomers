@@ -737,10 +737,10 @@ type CoinsTx struct {
 }
 
 //广告商押金或赎回
-func Advertisers( amount, privatekey, cointype,isDeposit,qscchainid string, qscnonce int64) string {
+func Advertisers( amount, privatekey, cointype,isDeposit,qscchainid string) string {
 	var result ResultInvest
 	result.Code = ResultCodeSuccess
-	tx, berr := advertisers(amount, privatekey, cointype,isDeposit,qscchainid, qscnonce)
+	tx, berr := advertisers(amount, privatekey, cointype,isDeposit,qscchainid)
 	if berr != "" {
 		return berr
 	}
@@ -756,7 +756,7 @@ func Advertisers( amount, privatekey, cointype,isDeposit,qscchainid string, qscn
 }
 
 // investAd 投资广告
-func advertisers( coins, privatekey, cointype,isDeposit,qscchainid string,qscnonce int64) (*TxStd, string) {
+func advertisers( coins, privatekey, cointype,isDeposit,qscchainid string) (*TxStd, string) {
 	amount, err := strconv.Atoi(coins)
 	if err!=nil {
 		return nil, NewErrorResult("601", 0, "", "amount format error").Marshal()
@@ -773,7 +773,17 @@ func advertisers( coins, privatekey, cointype,isDeposit,qscchainid string,qscnon
 
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	investor, _ := getAddrFromBech32(addrben32)
-	qscnonce += 1
+
+	AccountStr1 := QOSQueryAccountGet(addrben32)
+	accb := []byte(AccountStr1)
+	data := respwrap.RPCResponse{}
+	err = Cdc.UnmarshalJSON(accb, &data)
+	rawresp := data.Result
+	acc := QOSAccount{}
+	Cdc.UnmarshalJSON(rawresp, &acc)
+	var qscnonce int64
+	qscnonce = int64(acc.Nonce)
+	qscnonce++
 	it := &CoinsTx{}
 	it.Address = investor
 	it.Cointype=cointype
@@ -809,9 +819,8 @@ func (tx AdvertisersTx) GetSignData() (ret []byte) {
 //coinAmount             //押金数量
 //qscchainid             //chainid
 //qscnonce               //nonce
-func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
-	qsc, _ := strconv.ParseInt(qscnonce, 10, 64)
-	return Advertisers(coinAmount,privatekey,coinsType,"2",qscchainid,qsc)
+func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid string) string {
+	return Advertisers(coinAmount,privatekey,coinsType,"2",qscchainid)
 }
 
 //成为非广告商 赎回押金
@@ -820,9 +829,8 @@ func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce st
 //coinAmount             //押金数量
 //qscchainid             //chainid
 //qscnonce               //nonce
-func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
-	qsc, _ := strconv.ParseInt(qscnonce, 10, 64)
-	return Advertisers(coinAmount,privatekey,coinsType,"1",qscchainid,qsc)
+func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid string) string {
+	return Advertisers(coinAmount,privatekey,coinsType,"1",qscchainid)
 }
 
 

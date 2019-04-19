@@ -210,14 +210,14 @@ func BroadcastTransferTx(rootDir, node, chainID, txString string, async bool) st
 }
 
 //for AdvertisersTrue
-func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
-	output := slim.AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid, qscnonce )
+func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid string) string {
+	output := slim.AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid )
 	return output
 }
 
 //for AdvertisersFalse
-func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid, qscnonce string) string {
-	output := slim.AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid, qscnonce )
+func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid string) string {
+	output := slim.AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid )
 	return output
 }
 
