@@ -238,17 +238,17 @@ func GetBlance(addrs string)string{
 }
 
 
-func GetBlanceByCointype(addrs ,cointype string)slim.BigInt{
+func GetBlanceByCointype(addrs ,cointype string)string{
 	result:=GetBlance(addrs)
     var qsc slim.QSCs
 	json.Unmarshal([]byte(result),&qsc)
 
 	for _,v:=range qsc{
 		if strings.ToUpper(v.Name)==strings.ToUpper(cointype){
-			return v.Amount
+			return v.Amount.String()
 		}
 	}
-	return slim.ZeroInt()
+	return "0"
 }
 
 
