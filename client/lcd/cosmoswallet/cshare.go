@@ -251,5 +251,14 @@ func GetBlanceByCointype(addrs ,cointype string)string{
 	return "0"
 }
 
-
+// acutionAd 竞拍广告
+//articleHash            //广告位标识
+//privatekey             //用户私钥
+//coinsType              //竞拍币种
+//coinAmount             //竞拍数量
+//qscchainid             //chainid
+func AcutionAd( articleHash, privatekey,  coinsType, coinAmount,qscchainid string) string {
+	output := slim.AcutionAd( articleHash, privatekey,  coinsType, coinAmount,qscchainid)
+	return output
+}
 
