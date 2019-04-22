@@ -561,7 +561,11 @@ func GetAllValidators(rootDir, node, chainID string) string {
 			}
 
 		}
-		validplus = append(validplus,validp)
+		//add the checkout for tendermint power more than 1
+		if validp.Validator.Tokens.GTE(sdk.NewInt(int64(1000000))) {
+			validplus = append(validplus,validp)
+		}
+
 	}
 
 	output, err := cdc.MarshalJSON(validplus)

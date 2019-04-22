@@ -96,8 +96,8 @@ func TestGetBondValidators(t *testing.T) {
 func TestGetAllValidators(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	node := "tcp://192.168.1.184:26657"
-	chainId := "cosmosv33"
+	node := "tcp://47.105.142.9:26657"
+	chainId := "cosmoshub-1"
 	getVals := GetAllValidators(rootDir,node,chainId)
 	t.Log(getVals)
 }

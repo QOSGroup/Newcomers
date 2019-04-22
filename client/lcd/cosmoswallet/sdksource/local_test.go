@@ -3,6 +3,7 @@ package sdksource
 import (
 	"os/user"
 	"testing"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestCreateSeed(t *testing.T) {
@@ -40,4 +41,10 @@ func TestUpdateKey(t *testing.T) {
 	newpass := "wm131422"
 	output := UpdateKey(rootDir, name, oldpass, newpass)
 	t.Log(output)
+}
+
+func TestToken2Power(t *testing.T) {
+	tokenInt := sdk.NewInt(int64(1000000))
+	power := sdk.TokensToTendermintPower(tokenInt)
+	t.Log(power)
 }
