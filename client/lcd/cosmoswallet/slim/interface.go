@@ -736,6 +736,9 @@ type CoinsTx struct {
 	ChangeType string     //0 plus  1 minus
 }
 
+
+
+
 //广告商押金或赎回
 func Advertisers( amount, privatekey, cointype,isDeposit,qscchainid string) string {
 	var result ResultInvest
@@ -813,12 +816,28 @@ func (tx AdvertisersTx) GetSignData() (ret []byte) {
 }
 
 
+type AuctionTx struct {
+	ArticleHash string        // 文章hash
+	Address     Address //qos地址
+	CoinsType   string        //币种
+	CoinAmount  BigInt //数量
+	Gas BigInt
+}
+
+func (tx AuctionTx) GetSignData() (ret []byte) {
+	ret = append(ret, tx.Address...)
+	ret = append(ret, tx.CoinsType...)
+	ret = append(ret, []byte(tx.CoinAmount.String())...)
+	return ret
+}
+
+
+
 //成为广告商
 //privatekey             //用户私钥
 //coinsType              //押金币种
 //coinAmount             //押金数量
 //qscchainid             //chainid
-//qscnonce               //nonce
 func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid string) string {
 	return Advertisers(coinAmount,privatekey,coinsType,"2",qscchainid)
 }
@@ -828,7 +847,6 @@ func AdvertisersTrue( privatekey,  coinsType, coinAmount,qscchainid string) stri
 //coinsType              //押金币种
 //coinAmount             //押金数量
 //qscchainid             //chainid
-//qscnonce               //nonce
 func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid string) string {
 	return Advertisers(coinAmount,privatekey,coinsType,"1",qscchainid)
 }
@@ -838,4 +856,78 @@ func GetTx(tx string)string{
 	txBytes:=[]byte(tx)
 	txhashs := strings.ToUpper(hex.EncodeToString(tmhash.Sum(txBytes)))
     return string(txhashs)
+}
+
+// acutionAd 竞拍广告
+//articleHash            //广告位标识
+//privatekey             //用户私钥
+//coinsType              //竞拍币种
+//coinAmount             //竞拍数量
+//qscchainid             //chainid
+func AcutionAd( articleHash, privatekey,  coinsType, coinAmount,qscchainid string) string {
+	var result ResultInvest
+	result.Code = ResultCodeSuccess
+	amount, err := strconv.Atoi(coinAmount)
+	if err!=nil {
+		result.Code = ResultCodeInternalError
+		result.Reason = "AcutionAd invalid amount"
+		return result.Marshal()
+	}
+	tx, buff := acutionAd( articleHash, privatekey,  coinsType, amount,qscchainid)
+	if buff != "" {
+		return buff
+	}
+
+	js, err := Cdc.MarshalJSON(tx)
+	if err != nil {
+		log.Printf("AcutionAd err:%s", err.Error())
+		result.Code = ResultCodeInternalError
+		result.Reason = err.Error()
+		return result.Marshal()
+	}
+	result.Result = json.RawMessage(js)
+	return result.Marshal()
+}
+
+// acutionAd 竞拍广告
+func acutionAd(articleHash, privatekey,  coinsType string,coinAmount int,qscchainid string) (*TxStd, string) {
+
+	var key ed25519local.PrivKeyEd25519
+	ts := "{\"type\": \"tendermint/PrivKeyEd25519\",\"value\": \"" + privatekey + "\"}"
+	err1 := Cdc.UnmarshalJSON([]byte(ts), &key)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	priv := key
+	gas := NewBigInt(int64(MaxGas))
+	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
+	sendAddress, _ := getAddrFromBech32(addrben32)
+	AccountStr1 := QOSQueryAccountGet(addrben32)
+	accb := []byte(AccountStr1)
+	data := respwrap.RPCResponse{}
+	err := Cdc.UnmarshalJSON(accb, &data)
+	if err!=nil{
+		return nil, err.Error()
+
+	}
+	rawresp := data.Result
+	acc := QOSAccount{}
+	Cdc.UnmarshalJSON(rawresp, &acc)
+	var qscnonce int64
+	qscnonce = int64(acc.Nonce)
+	qscnonce++
+	it := &AuctionTx{}
+	it.ArticleHash = articleHash
+	it.Address = sendAddress
+	it.CoinsType = coinsType
+	it.Gas =ZeroInt()
+	it.CoinAmount = NewBigInt(int64(coinAmount))
+	tx2 := NewTxStd(it, qscchainid, gas)
+	signature2, _ := tx2.SignTx(priv, qscnonce, qscchainid)
+	tx2.Signature = []Signature{Signature{
+		Pubkey:    priv.PubKey(),
+		Signature: signature2,
+		Nonce:     qscnonce,
+	}}
+	return tx2, ""
 }

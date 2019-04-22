@@ -56,6 +56,8 @@ func RegisterCodec(cdc *amino.Codec) {
 	cdc.RegisterConcrete(&BaseAccount{}, "qbase/account/BaseAccount", nil)
 	cdc.RegisterConcrete(&InvestTx{}, "qstars/InvestTx", nil)
 	cdc.RegisterConcrete(&AdvertisersTx{}, "jianqian/AdvertisersTx", nil)
+	cdc.RegisterConcrete(&AuctionTx{}, "jianqian/AuctionTx", nil)
+
 }
 
 // amino codec to marshal/unmarshal
