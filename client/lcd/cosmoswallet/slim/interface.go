@@ -853,7 +853,10 @@ func AdvertisersFalse( privatekey,  coinsType, coinAmount,qscchainid string) str
 
 
 func GetTx(tx string)string{
-	txBytes:=[]byte(tx)
+	txBytes, err := hex.DecodeString(tx)
+	if err != nil {
+		return err.Error()
+	}
 	txhashs := strings.ToUpper(hex.EncodeToString(tmhash.Sum(txBytes)))
     return string(txhashs)
 }
