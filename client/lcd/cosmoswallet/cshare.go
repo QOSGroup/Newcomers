@@ -234,7 +234,11 @@ func GetTx(tx string)string{
 func GetBlance(addrs string)string{
 	path := fmt.Sprintf("/store/%s/%s", "aoeaccount", "key")
 	output,_ := slim.Query(path,[]byte(addrs))
-	return string (output)
+	var basecoin *slim.BaseCoins
+	//err=json.Unmarshal(resp.Value,&basecoin)
+	slim.Cdc.UnmarshalBinaryBare(output, &basecoin)
+	result,_:=json.Marshal(basecoin)
+	return string (result)
 }
 
 
@@ -242,7 +246,6 @@ func GetBlanceByCointype(addrs ,cointype string)string{
 	result:=GetBlance(addrs)
     var qsc slim.QSCs
 	json.Unmarshal([]byte(result),&qsc)
-
 	for _,v:=range qsc{
 		if strings.ToUpper(v.Name)==strings.ToUpper(cointype){
 			return v.Amount.String()
