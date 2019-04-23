@@ -143,7 +143,7 @@ func TestQueryTx(t *testing.T) {
 	rootDir := usr.HomeDir
 	node := "tcp://47.105.156.172:36657"
 	chainId := "testing"
-	txHash := "9B1D432B138E99800D7F32146924341AB75904BF53D7FD781F2DC94CB0E1CB3D"
+	txHash := "11E8BF5FF8EDEB33FEF736E81782903A1C129C48789AB4CF0C4D74B044C54375"
 	qTx := QueryTx(rootDir,node,chainId,txHash)
 	t.Log(qTx)
 }
@@ -176,7 +176,7 @@ func TestTransferB4send(t *testing.T) {
 	fromName := "cosmos"
 	password := "wm131421"
 	toStr := "cosmos1kklk4eqye6pla97dzmc03pw5lst7x0n4zt8syw"
-	coinStr := "100 stake"
+	coinStr := "100stake"
 	feeStr := "1stake"
 	async := true
 	Tx := TransferB4send(rootDir, node, chainId, fromName, password, toStr, coinStr, feeStr,async)
@@ -192,7 +192,7 @@ func TestBroadcastTransferTx(t *testing.T) {
 	fromName := "cosmos"
 	password := "wm131421"
 	toStr := "cosmos1kklk4eqye6pla97dzmc03pw5lst7x0n4zt8syw"
-	coinStr := "100 stake"
+	coinStr := "10000stake"
 	feeStr := "1stake"
 	async := true
 	txString := TransferB4send(rootDir, node, chainId, fromName, password, toStr, coinStr, feeStr,async)

@@ -925,7 +925,7 @@ func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, 
 	if err != nil {
 		return err.Error()
 	}
-	return string(txBytes)
+	return string(hex.EncodeToString(txBytes))
 }
 
 //broadcast the tx
@@ -935,7 +935,10 @@ func BroadcastTransferTx(rootDir, node, chainID, txString string, async bool) st
 		WithCodec(cdc).
 		WithAccountDecoder(cdc).WithTrustNode(true)
 	// broadcast to a Tendermint node
-	txBytes := []byte(txString)
+	txBytes, err := hex.DecodeString(txString)
+	if err != nil {
+		return err.Error()
+	}
 	res, err := cliCtx.BroadcastTx(txBytes)
 	if err != nil {
 		return err.Error()
