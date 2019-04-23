@@ -141,9 +141,9 @@ func TestGetDelegationRewards(t *testing.T) {
 func TestQueryTx(t *testing.T) {
 	usr, _ := user.Current()
 	rootDir := usr.HomeDir
-	node := "tcp://192.168.1.184:26657"
-	chainId := "cosmosv33"
-	txHash := "B3C201B958C86B3A132A7FD4184B27218F90EAD9600E9C73B48D5243DD42E477"
+	node := "tcp://47.105.156.172:36657"
+	chainId := "testing"
+	txHash := "9B1D432B138E99800D7F32146924341AB75904BF53D7FD781F2DC94CB0E1CB3D"
 	qTx := QueryTx(rootDir,node,chainId,txHash)
 	t.Log(qTx)
 }
@@ -166,4 +166,36 @@ func TestGetDelegtorRewardsShares(t *testing.T) {
 	delegatorAddr := "cosmos1e5yhp5lkhjuautf4mhhll7l733za8tgpj329d9"
 	daa := GetDelegtorRewardsShares(rootDir,node,chainId,delegatorAddr)
 	t.Log(daa)
+}
+
+func TestTransferB4send(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	node := "tcp://47.105.156.172:36657"
+	chainId := "testing"
+	fromName := "cosmos"
+	password := "wm131421"
+	toStr := "cosmos1kklk4eqye6pla97dzmc03pw5lst7x0n4zt8syw"
+	coinStr := "100 stake"
+	feeStr := "1stake"
+	async := true
+	Tx := TransferB4send(rootDir, node, chainId, fromName, password, toStr, coinStr, feeStr,async)
+	t.Log(Tx)
+
+}
+
+func TestBroadcastTransferTx(t *testing.T) {
+	usr, _ := user.Current()
+	rootDir := usr.HomeDir
+	node := "tcp://47.105.156.172:36657"
+	chainId := "testing"
+	fromName := "cosmos"
+	password := "wm131421"
+	toStr := "cosmos1kklk4eqye6pla97dzmc03pw5lst7x0n4zt8syw"
+	coinStr := "100 stake"
+	feeStr := "1stake"
+	async := true
+	txString := TransferB4send(rootDir, node, chainId, fromName, password, toStr, coinStr, feeStr,async)
+	Bt:= BroadcastTransferTx(rootDir, node, chainId, txString, async)
+	t.Log(Bt)
 }
