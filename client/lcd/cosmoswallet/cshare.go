@@ -265,3 +265,14 @@ func AcutionAd( articleHash, privatekey,  coinsType, coinAmount,qscchainid strin
 	return output
 }
 
+
+//for Extract
+func Extract( privatekey,  coinsType, coinAmount,qscchainid string) string {
+	output := slim.Extract( privatekey,  coinsType, coinAmount,qscchainid )
+	return output
+}
+
+// 提交到联盟链上
+func BroadcastTransferTxToQSC(txstring,broadcastModes string) string {
+	return slim.BroadcastTransferTxToQSC(txstring,broadcastModes)
+}

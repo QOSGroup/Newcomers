@@ -2,12 +2,16 @@ package slim
 
 import (
 	"bytes"
+	"encoding/hex"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/tendermint/tendermint/libs/common"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"io/ioutil"
 	"log"
 	"net/http"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+
 	"errors"
 )
 
@@ -186,4 +190,29 @@ func Query(path string, key common.HexBytes) (res []byte, err error) {
 	}
 
 	return resp.Value, nil
+}
+
+
+// 提交到联盟链上
+func BroadcastTransferTxToQSC(txb string,broadcastModes string) string {
+	txBytes, err := hex.DecodeString(txb)
+	if err != nil {
+		return err.Error()
+	}
+	var res *ctypes.ResultBroadcastTx
+	switch broadcastModes {
+	case client.BroadcastSync:
+		res, err = RPC.BroadcastTxSync(txBytes)
+		//默认异步
+	default:
+		res, err = RPC.BroadcastTxAsync(txBytes)
+	}
+	if err != nil {
+		return err.Error()
+	}
+	resbyte, err := Cdc.MarshalJSON(res)
+	if err != nil {
+		return err.Error()
+	}
+	return string(resbyte)
 }

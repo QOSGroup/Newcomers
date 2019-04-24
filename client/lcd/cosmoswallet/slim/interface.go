@@ -619,7 +619,7 @@ func (ri ResultInvest) Marshal() string {
 		fmt.Printf("InvestAd err:%s", err.Error())
 		return InternalError(err.Error()).Marshal()
 	}
-	return string(jsonBytes)
+	return string(	hex.EncodeToString(jsonBytes))
 }
 
 const coinsName = "AOE"
@@ -926,6 +926,86 @@ func acutionAd(articleHash, privatekey,  coinsType string,coinAmount int,qscchai
 	it.Gas =ZeroInt()
 	it.CoinAmount = NewBigInt(int64(coinAmount))
 	tx2 := NewTxStd(it, qscchainid, gas)
+	signature2, _ := tx2.SignTx(priv, qscnonce, qscchainid)
+	tx2.Signature = []Signature{Signature{
+		Pubkey:    priv.PubKey(),
+		Signature: signature2,
+		Nonce:     qscnonce,
+	}}
+	return tx2, ""
+}
+
+
+type RechargeTx struct {
+	Tx *CoinsTx
+}
+
+func (tx RechargeTx) GetSignData() (ret []byte) {
+	ret = append(ret, tx.Tx.Address.Bytes()...)
+	ret = append(ret, Int2Byte(tx.Tx.Amount.Int64())...)
+	ret = append(ret, []byte(tx.Tx.Cointype)...)
+	ret = append(ret, []byte(tx.Tx.ChangeType)...)
+	return
+}
+
+
+
+//广告商押金或赎回
+func Extract( amount, privatekey, cointype,qscchainid string) string {
+	var result ResultInvest
+	result.Code = ResultCodeSuccess
+	tx, berr := extract(amount, privatekey, cointype,qscchainid)
+	if berr != "" {
+		return berr
+	}
+	js, err := Cdc.MarshalJSON(tx)
+	if err != nil {
+		log.Printf("Extract err:%s", err.Error())
+		result.Code = ResultCodeInternalError
+		result.Reason = err.Error()
+		return result.Marshal()
+	}
+	result.Result = json.RawMessage(js)
+	return result.Marshal()
+}
+
+
+func extract( coins, privatekey, cointype,qscchainid string) (*TxStd, string) {
+	amount, err := strconv.Atoi(coins)
+	if err!=nil {
+		return nil, NewErrorResult("601", 0, "", "amount format error").Marshal()
+	}
+
+	var key ed25519local.PrivKeyEd25519
+	ts := "{\"type\": \"tendermint/PrivKeyEd25519\",\"value\": \"" + privatekey + "\"}"
+	err1 := Cdc.UnmarshalJSON([]byte(ts), &key)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	priv := key
+	gas := NewBigInt(int64(MaxGas))
+
+	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
+	investor, _ := getAddrFromBech32(addrben32)
+
+	AccountStr1 := QOSQueryAccountGet(addrben32)
+	accb := []byte(AccountStr1)
+	data := respwrap.RPCResponse{}
+	err = Cdc.UnmarshalJSON(accb, &data)
+	rawresp := data.Result
+	acc := QOSAccount{}
+	Cdc.UnmarshalJSON(rawresp, &acc)
+	var qscnonce int64
+	qscnonce = int64(acc.Nonce)
+	qscnonce++
+	it := &CoinsTx{}
+	it.Address = investor
+	it.Cointype=cointype
+	it.ChangeType="2"
+	it.Amount=NewBigInt(int64(amount))
+	tx:=RechargeTx{it}
+	fmt.Println(investor, amount, cointype, "2")
+	tx2 := NewTxStd(tx, qscchainid, gas)
 	signature2, _ := tx2.SignTx(priv, qscnonce, qscchainid)
 	tx2.Signature = []Signature{Signature{
 		Pubkey:    priv.PubKey(),
