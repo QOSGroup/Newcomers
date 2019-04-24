@@ -12,7 +12,7 @@ import (
 const ctxAccStoreName = "acc"
 
 //NewCLIContext is used to init the config context without using Viper, the argues are all from the input of the func
-func newCLIContext(rootDir,node,chainID string, async bool) context.CLIContext {
+func newCLIContext(rootDir,node,chainID string) context.CLIContext {
 	var (
 		rpc rpcclient.Client
 
@@ -52,8 +52,8 @@ func newCLIContext(rootDir,node,chainID string, async bool) context.CLIContext {
 		Output:        os.Stdout,
 		NodeURI:       nodeURI,
 		AccountStore:  auth.StoreKey,
-		//Verifier:      verifier,
-		Async:        async,
+		//Verifier:    verifier,
+		//BroadcastMode: broadcastMode,
 	}
 	return CliContext
 
