@@ -42,14 +42,14 @@ func GetAccount(rootDir,node,chainID,addr string) string {
 
 
 //transfer
-func Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr string, async bool) string  {
-	output := sdksource.Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr,async)
+func Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr, broadcastMode string) string  {
+	output := sdksource.Transfer(rootDir,node,chainId,fromName,password,toStr,coinStr,feeStr,broadcastMode)
 	return output
 }
 
 //delegate
-func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr string, async bool) string {
-	output := sdksource.Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr, async)
+func Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr, broadcastMode string) string {
+	output := sdksource.Delegate(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, delegationCoinStr, feeStr, broadcastMode)
 	return output
 }
 
@@ -60,8 +60,8 @@ func GetDelegationShares(rootDir, node, chainID, delegatorAddr, validatorAddr st
 }
 
 //for unbond delegation shares from specific validator
-func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr string, async bool) string {
-	output := sdksource.UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr, async)
+func UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, Ubdshares,feeStr, broadcastMode string) string {
+	output := sdksource.UnbondingDelegation(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, Ubdshares,feeStr, broadcastMode)
 	return output
 }
 
@@ -90,8 +90,8 @@ func GetAllDelegations(rootDir, node, chainID, delegatorAddr string) string {
 }
 
 //Withdraw rewards from a specific validator
-func WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr string, async bool) string {
-	output := sdksource.WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr, async)
+func WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr, broadcastMode string) string {
+	output := sdksource.WithdrawDelegationReward(rootDir, node, chainID, delegatorName, password, delegatorAddr, validatorAddr, feeStr, broadcastMode)
 	return output
 }
 
@@ -202,13 +202,13 @@ func QOSTransferRecordsQuery(chainid, addr, cointype, offset, limit string) stri
 	return output
 }
 
-func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr string, async bool) string {
-	output := sdksource.TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr, async)
+func TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr string) string {
+	output := sdksource.TransferB4send(rootDir, node, chainID, fromName, password, toStr, coinStr, feeStr)
 	return output
 }
 
-func BroadcastTransferTx(rootDir, node, chainID, txString string, async bool) string {
-	output := sdksource.BroadcastTransferTx(rootDir, node, chainID, txString, async)
+func BroadcastTransferTx(rootDir, node, chainID, txString, broadcastMode string) string {
+	output := sdksource.BroadcastTransferTx(rootDir, node, chainID, txString, broadcastMode)
 	return output
 }
 

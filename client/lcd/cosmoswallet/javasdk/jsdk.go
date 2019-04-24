@@ -15,7 +15,9 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	"os"
+	"time"
 )
 
 var cdc = app.MakeCodec()
@@ -170,20 +172,35 @@ func QueryTx(rootDir,Node,chainID,Txhash string) string {
 		return err.Error()
 	}
 
-	res, err := node.Tx(hash, !cliCtx.TrustNode)
+	resTx, err := node.Tx(hash, !cliCtx.TrustNode)
 	if err != nil {
 		return err.Error()
 	}
 
+	//get the resBlocks
+	resTxs:= []*ctypes.ResultTx{resTx}
+	resBlocks := make(map[int64]*ctypes.ResultBlock)
+	for _, resTx := range resTxs {
+		if _, ok := resBlocks[resTx.Height]; !ok {
+			resBlock, err := node.Block(&resTx.Height)
+			if err != nil {
+				return err.Error()
+			}
+
+			resBlocks[resTx.Height] = resBlock
+		}
+	}
+
 	//parse Tx
 	var tx auth.StdTx
-	errz := cdc.UnmarshalBinaryLengthPrefixed(res.Tx, &tx)
+	errz := cdc.UnmarshalBinaryLengthPrefixed(resTx.Tx, &tx)
 	if errz != nil {
 		return errz.Error()
 	}
 
+
 	//format Tx result
-	info := sdk.NewResponseResultTx(res, tx)
+	info := sdk.NewResponseResultTx(resTx, tx, resBlocks[resTx.Height].Block.Time.Format(time.RFC3339))
 
 	//json output the result
 	resp, _ := cdc.MarshalJSON(info)
