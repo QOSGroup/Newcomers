@@ -936,11 +936,11 @@ func acutionAd(articleHash, privatekey,  coinsType string,coinAmount int,qscchai
 }
 
 
-type RechargeTx struct {
+type ExtractTx struct {
 	Tx *CoinsTx
 }
 
-func (tx RechargeTx) GetSignData() (ret []byte) {
+func (tx ExtractTx) GetSignData() (ret []byte) {
 	ret = append(ret, tx.Tx.Address.Bytes()...)
 	ret = append(ret, Int2Byte(tx.Tx.Amount.Int64())...)
 	ret = append(ret, []byte(tx.Tx.Cointype)...)
@@ -1003,7 +1003,7 @@ func extract( coins, privatekey, cointype,qscchainid string) (*TxStd, string) {
 	it.Cointype=cointype
 	it.ChangeType="2"
 	it.Amount=NewBigInt(int64(amount))
-	tx:=RechargeTx{it}
+	tx:=ExtractTx{it}
 	fmt.Println(investor, amount, cointype, "2")
 	tx2 := NewTxStd(tx, qscchainid, gas)
 	signature2, _ := tx2.SignTx(priv, qscnonce, qscchainid)
