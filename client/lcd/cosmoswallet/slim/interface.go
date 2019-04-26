@@ -619,7 +619,10 @@ func (ri ResultInvest) Marshal() string {
 		fmt.Printf("InvestAd err:%s", err.Error())
 		return InternalError(err.Error()).Marshal()
 	}
-	return string(	hex.EncodeToString(jsonBytes))
+	if ri.Code==ResultCodeSuccess{
+		return string(	hex.EncodeToString(jsonBytes))
+	}
+	return string(	jsonBytes)
 }
 
 const coinsName = "AOE"
