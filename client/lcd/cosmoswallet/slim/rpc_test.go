@@ -38,7 +38,7 @@ func TestTransferTxToQSC(t *testing.T) {
 	SetBlockchainEntrance("47.105.52.237:26657", "forQmoonAddr")
 	t.Log("2222222222222222")
 
-	privkey := "j7wbT1lfG0ZRObMKwyYkVFpwRW0OlzFcgVL6ZwQJjeicPcStxppyWMpD1tfFg2YEcDu5JH+M6g+EhSBmjHq0bg=="
+	privkey := "wnEmxnWFgT93M5a9l7aPTdkxM8MLoenyMe60sD/8rqzslA7MvfoHydXqL4QGbplLhIlEbLAZ/0ue9G1rjBFMfQ=="
 	chainid := "test-chain-xHEkEv"
 	Tout := AdvertisersTrue(privkey, "ATOM", "100000", chainid)
 	t.Log(Tout)

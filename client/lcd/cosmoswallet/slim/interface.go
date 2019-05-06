@@ -539,8 +539,12 @@ func QSCtransferSendStr(addrto, coinstr, privkey, chainid string) string {
 	}
 
 	//Get "nonce" from the func RpcQueryAccount
-	acc,err := RpcQueryAccount(from)
-
+	acc,_ := RpcQueryAccount(from)
+	var qscnonce int64
+	if acc!=nil{
+		qscnonce = int64(acc.Nonce)
+	}
+	qscnonce++
 
 	//coins check to further improvement
 	/*	var qcoins types.Coins
@@ -554,13 +558,9 @@ func QSCtransferSendStr(addrto, coinstr, privkey, chainid string) string {
 			fmt.Println("Address %s doesn't have enough coins to pay for this transaction.", from)
 		}
 	*/
-	var nn int64
-	nn = int64(acc.Nonce)
-	nn++
-
 	//New transfer for QOS transaction
 	t := NewTransfer(from, to, ccs)
-	msg := genStdSendTx(t, priv, chainid, nn)
+	msg := genStdSendTx(t, priv, chainid, qscnonce)
 	jasonpayload, err := Cdc.MarshalJSON(msg)
 	if err != nil {
 		fmt.Println(err)
@@ -690,10 +690,11 @@ func investAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) (*T
 		})
 	}
 	//qos nonce fetched from the qosaccount query
-	acc,err := RpcQueryAccount(investor)
-
+	acc,_ := RpcQueryAccount(investor)
 	var qosnonce int64
-	qosnonce = int64(acc.Nonce)
+	if acc!=nil{
+		qosnonce = int64(acc.Nonce)
+	}
 	qosnonce++
 	//the first sign with the QOS nonce
 	t := NewTransfer(investor, tempAddr, ccs)
@@ -708,9 +709,7 @@ func investAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) (*T
 	}}
 
 
-	var qscnonce int64
-	qscnonce = int64(acc.Nonce)
-	qscnonce++
+	qscnonce := qosnonce
 
 	it := &InvestTx{}
 	it.ArticleHash = []byte(articleHash)
@@ -774,13 +773,11 @@ func advertisers( coins, privatekey, cointype,isDeposit,qscchainid string) (*TxS
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	investor, _ := getAddrFromBech32(addrben32)
 
-	acc,err := RpcQueryAccount(investor)
-	if err!=nil{
-		return nil, err.Error()
-
-	}
+	acc,_ := RpcQueryAccount(investor)
 	var qscnonce int64
-	qscnonce = int64(acc.Nonce)
+	if acc!=nil{
+		qscnonce = int64(acc.Nonce)
+	}
 	qscnonce++
 	it := &CoinsTx{}
 	it.Address = investor
@@ -900,13 +897,11 @@ func acutionAd(articleHash, privatekey,  coinsType string,coinAmount int,qscchai
 	gas := NewBigInt(int64(MaxGas))
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	sendAddress, _ := getAddrFromBech32(addrben32)
-	acc,err := RpcQueryAccount(sendAddress)
-	if err!=nil{
-		return nil, err.Error()
-
-	}
+	acc,_ := RpcQueryAccount(sendAddress)
 	var qscnonce int64
-	qscnonce = int64(acc.Nonce)
+	if acc!=nil{
+		qscnonce = int64(acc.Nonce)
+	}
 	qscnonce++
 	it := &AuctionTx{}
 	it.ArticleHash = articleHash
@@ -977,13 +972,11 @@ func extract( coins, privatekey, cointype,qscchainid string) (*TxStd, string) {
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	investor, _ := getAddrFromBech32(addrben32)
 
-	acc,err := RpcQueryAccount(investor)
-	if err!=nil{
-		return nil, err.Error()
-
-	}
+	acc,_ := RpcQueryAccount(investor)
 	var qscnonce int64
-	qscnonce = int64(acc.Nonce)
+	if acc!=nil{
+		qscnonce = int64(acc.Nonce)
+	}
 	qscnonce++
 	it := &CoinsTx{}
 	it.Address = investor
