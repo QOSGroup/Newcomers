@@ -44,6 +44,8 @@ require (
 	github.com/stretchr/testify v1.2.2
 	github.com/syndtr/goleveldb v0.0.0-20180708030551-c4c61651e9e3 // indirect
 	github.com/tendermint/btcd v0.1.1
+	github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
+	github.com/tendermint/ed25519 v0.0.0-20171027050219-d8387025d2b9
 	github.com/tendermint/go-amino v0.14.1
 	github.com/tendermint/iavl v0.12.1
 	github.com/tendermint/tendermint v0.31.4
@@ -53,4 +55,4 @@ require (
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
 
-replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
+//replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5

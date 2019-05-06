@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim/funcInlocal/bech32local"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim/funcInlocal/ed25519local"
-	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim/funcInlocal/respwrap"
 	"github.com/pkg/errors"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	"io/ioutil"
@@ -21,7 +20,14 @@ import (
 	"strings"
 )
 //the MaxGas under configing
-const MaxGas = 20000
+
+const (
+	AccountMapperName = "acc"      // 用户获取账户存储的store的键名
+	accountStoreKey   = "account:" // 便于获取全部账户的通用存储键名，继承BaseAccount时，可根据不同业务设置存储前缀
+    MaxGas = 20000
+
+)
+
 
 //genStdSendTx for the Tx send operation
 // NewInt constructs BigInt from int64
@@ -241,6 +247,11 @@ func genStdSendTx(sendTx ITx, priKey ed25519local.PrivKeyEd25519, chainid string
 	}}
 
 	return stx
+}
+
+// 将地址转换成存储通用的key
+func AddressStoreKey(addr Address) []byte {
+	return append([]byte(accountStoreKey), addr.Bytes()...)
 }
 
 func getAddrFromBech32(bech32Addr string) ([]byte, error) {
@@ -527,14 +538,9 @@ func QSCtransferSendStr(addrto, coinstr, privkey, chainid string) string {
 		})
 	}
 
-	//Get "nonce" from the func QOSQueryAccountGet
-	AccountStr := QOSQueryAccountGet(addrben32)
-	accb := []byte(AccountStr)
-	data := respwrap.RPCResponse{}
-	err = Cdc.UnmarshalJSON(accb, &data)
-	rawresp := data.Result
-	acc := QOSAccount{}
-	Cdc.UnmarshalJSON(rawresp, &acc)
+	//Get "nonce" from the func RpcQueryAccount
+	acc,err := RpcQueryAccount(from)
+
 
 	//coins check to further improvement
 	/*	var qcoins types.Coins
@@ -614,15 +620,15 @@ func NewErrorResult(code string, height int64, hash string, reason string) Resul
 }
 
 func (ri ResultInvest) Marshal() string {
-	jsonBytes, err := json.MarshalIndent(ri, "", "  ")
-	if err != nil {
-		fmt.Printf("InvestAd err:%s", err.Error())
-		return InternalError(err.Error()).Marshal()
-	}
+	//jsonBytes, err := json.MarshalIndent(ri, "", "  ")
+	//if err != nil {
+	//	fmt.Printf("InvestAd err:%s", err.Error())
+	//	return InternalError(err.Error()).Marshal()
+	//}
 	if ri.Code==ResultCodeSuccess{
-		return string(	hex.EncodeToString(jsonBytes))
+		return string(	hex.EncodeToString(ri.Result))
 	}
-	return string(	jsonBytes)
+	return string(ri.Result)
 }
 
 const coinsName = "AOE"
@@ -641,7 +647,7 @@ func JQInvestAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) s
 		return result.Marshal()
 	}
 
-	js, err := Cdc.MarshalJSON(tx)
+	js, err := Cdc.MarshalBinaryBare(tx)
 	if err != nil {
 		fmt.Printf("investAd err:%s", err.Error())
 		result.Code = ResultCodeInternalError
@@ -684,13 +690,8 @@ func investAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) (*T
 		})
 	}
 	//qos nonce fetched from the qosaccount query
-	AccountStr1 := QOSQueryAccountGet(addrben32)
-	accb := []byte(AccountStr1)
-	data := respwrap.RPCResponse{}
-	err = Cdc.UnmarshalJSON(accb, &data)
-	rawresp := data.Result
-	acc := QOSAccount{}
-	Cdc.UnmarshalJSON(rawresp, &acc)
+	acc,err := RpcQueryAccount(investor)
+
 	var qosnonce int64
 	qosnonce = int64(acc.Nonce)
 	qosnonce++
@@ -706,16 +707,9 @@ func investAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) (*T
 		Nonce:     qosnonce,
 	}}
 
-	//qsc nonce fetched from the qscaccount query
-	AccountStr2 := QSCQueryAccountGet(addrben32)
-	accb2 := []byte(AccountStr2)
-	data2 := respwrap.RPCResponse{}
-	err = Cdc.UnmarshalJSON(accb2, &data2)
-	rawresp2 := data2.Result
-	acc2 := QOSAccount{}
-	Cdc.UnmarshalJSON(rawresp2, &acc2)
+
 	var qscnonce int64
-	qscnonce = int64(acc2.Nonce)
+	qscnonce = int64(acc.Nonce)
 	qscnonce++
 
 	it := &InvestTx{}
@@ -750,7 +744,7 @@ func Advertisers( amount, privatekey, cointype,isDeposit,qscchainid string) stri
 	if berr != "" {
 		return berr
 	}
-	js, err := Cdc.MarshalJSON(tx)
+	js, err := Cdc.MarshalBinaryBare(tx)
 	if err != nil {
 		log.Printf("Advertisers err:%s", err.Error())
 		result.Code = ResultCodeInternalError
@@ -780,13 +774,11 @@ func advertisers( coins, privatekey, cointype,isDeposit,qscchainid string) (*TxS
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	investor, _ := getAddrFromBech32(addrben32)
 
-	AccountStr1 := QOSQueryAccountGet(addrben32)
-	accb := []byte(AccountStr1)
-	data := respwrap.RPCResponse{}
-	err = Cdc.UnmarshalJSON(accb, &data)
-	rawresp := data.Result
-	acc := QOSAccount{}
-	Cdc.UnmarshalJSON(rawresp, &acc)
+	acc,err := RpcQueryAccount(investor)
+	if err!=nil{
+		return nil, err.Error()
+
+	}
 	var qscnonce int64
 	qscnonce = int64(acc.Nonce)
 	qscnonce++
@@ -884,7 +876,7 @@ func AcutionAd( articleHash, privatekey,  coinsType, coinAmount,qscchainid strin
 		return buff
 	}
 
-	js, err := Cdc.MarshalJSON(tx)
+	js, err := Cdc.MarshalBinaryBare(tx)
 	if err != nil {
 		log.Printf("AcutionAd err:%s", err.Error())
 		result.Code = ResultCodeInternalError
@@ -908,17 +900,11 @@ func acutionAd(articleHash, privatekey,  coinsType string,coinAmount int,qscchai
 	gas := NewBigInt(int64(MaxGas))
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	sendAddress, _ := getAddrFromBech32(addrben32)
-	AccountStr1 := QOSQueryAccountGet(addrben32)
-	accb := []byte(AccountStr1)
-	data := respwrap.RPCResponse{}
-	err := Cdc.UnmarshalJSON(accb, &data)
+	acc,err := RpcQueryAccount(sendAddress)
 	if err!=nil{
 		return nil, err.Error()
 
 	}
-	rawresp := data.Result
-	acc := QOSAccount{}
-	Cdc.UnmarshalJSON(rawresp, &acc)
 	var qscnonce int64
 	qscnonce = int64(acc.Nonce)
 	qscnonce++
@@ -961,7 +947,7 @@ func Extract( amount, privatekey, cointype,qscchainid string) string {
 	if berr != "" {
 		return berr
 	}
-	js, err := Cdc.MarshalJSON(tx)
+	js, err := Cdc.MarshalBinaryBare(tx)
 	if err != nil {
 		log.Printf("Extract err:%s", err.Error())
 		result.Code = ResultCodeInternalError
@@ -991,13 +977,11 @@ func extract( coins, privatekey, cointype,qscchainid string) (*TxStd, string) {
 	addrben32,_ := bech32local.ConvertAndEncode(PREF_ADD, key.PubKey().Address().Bytes())
 	investor, _ := getAddrFromBech32(addrben32)
 
-	AccountStr1 := QOSQueryAccountGet(addrben32)
-	accb := []byte(AccountStr1)
-	data := respwrap.RPCResponse{}
-	err = Cdc.UnmarshalJSON(accb, &data)
-	rawresp := data.Result
-	acc := QOSAccount{}
-	Cdc.UnmarshalJSON(rawresp, &acc)
+	acc,err := RpcQueryAccount(investor)
+	if err!=nil{
+		return nil, err.Error()
+
+	}
 	var qscnonce int64
 	qscnonce = int64(acc.Nonce)
 	qscnonce++

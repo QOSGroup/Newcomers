@@ -118,6 +118,26 @@ func QSCQueryAccountGet(addr string) string {
 	return output
 }
 
+
+
+func RPCCQSCQueryAccountGet(addr string) string {
+	aurl := QSCAccounturl + addr
+	resp, _ := http.Get(aurl)
+	var body []byte
+	var err error
+	if resp.StatusCode == http.StatusOK {
+		body, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	defer resp.Body.Close()
+	output := string(body)
+	return output
+}
+
+
 //for QOS account query function
 func QOSQueryAccountGet(addr string) string {
 	aurl := QOSAccounturl + addr
@@ -215,4 +235,28 @@ func BroadcastTransferTxToQSC(txb string,broadcastModes string) string {
 		return err.Error()
 	}
 	return string(resbyte)
+}
+
+
+
+func RpcQueryAccount(addr Address) (*QOSAccount, error) {
+	key:=AddressStoreKey(addr)
+	opts := rpcclient.ABCIQueryOptions{
+		Height: 0,
+		Prove:  true,
+	}
+	result, err := RPC.ABCIQueryWithOptions("/store/acc/key", key, opts)
+	if err != nil {
+		return nil, err
+	}
+	resp := result.Response
+	if !resp.IsOK() {
+		return nil, errors.New("query failed")
+	}
+	var acc *QOSAccount
+	err = Cdc.UnmarshalBinaryBare(resp.Value, &acc)
+	if err != nil {
+		return nil, err
+	}
+	return acc, nil
 }
