@@ -577,15 +577,28 @@ func QSCtransferSendStr(addrto, coinstr, privkey, chainid string) string {
 	return output
 }
 
+//type InvestTx struct {
+//	Std         *TxStd
+//	ArticleHash []byte `json:"articleHash"` // 文章hash
+//}
+
+
 type InvestTx struct {
-	Std         *TxStd
-	ArticleHash []byte `json:"articleHash"` // 文章hash
+	Address      Address    `json:"address"`      // 投资者地址
+	Invest       BigInt     `json:"investad"`     // 投资金额
+	ArticleHash  []byte     `json:"articleHash"`  // 文章hash
+	Gas          BigInt
+	cointype     string
 }
 
-func (it InvestTx) GetSignData() []byte {
-	sd := it.Std.ITx.GetSignData()
 
-	return append(sd, it.ArticleHash...)
+
+func (it InvestTx) GetSignData() (ret []byte) {
+	ret = append(ret, it.ArticleHash...)
+	ret = append(ret, it.Address.Bytes()...)
+	ret = append(ret, []byte(it.cointype)...)
+	ret = append(ret, Int2Byte(it.Invest.Int64())...)
+	return
 }
 
 var _ ITx = (*InvestTx)(nil)
@@ -691,30 +704,19 @@ func investAd(QOSchainId, QSCchainId, articleHash, coins, privatekey string) (*T
 	}
 	//qos nonce fetched from the qosaccount query
 	acc,_ := RpcQueryAccount(investor)
-	var qosnonce int64
+	var qscnonce int64
 	if acc!=nil{
-		qosnonce = int64(acc.Nonce)
+		qscnonce = int64(acc.Nonce)
 	}
-	qosnonce++
-	//the first sign with the QOS nonce
-	t := NewTransfer(investor, tempAddr, ccs)
-	//msg := genStdSendTx(t, priv, QSCchainId, qosnonce)
-	gas1 := NewBigInt(int64(MaxGas))
-	stx := NewTxStd(t, QOSchainId, gas1)
-	signature, _ := stx.SignTx(priv, qosnonce, QSCchainId)
-	stx.Signature = []Signature{Signature{
-		Pubkey:    priv.PubKey(),
-		Signature: signature,
-		Nonce:     qosnonce,
-	}}
-
-
-	qscnonce := qosnonce
+	qscnonce++
 
 	it := &InvestTx{}
 	it.ArticleHash = []byte(articleHash)
-	it.Std = stx
-	tx2 := NewTxStd(it, QSCchainId, stx.MaxGas)
+	it.Address=investor
+	it.cointype=ccs[0].Name
+	it.Invest=ccs[0].Amount
+	gas := NewBigInt(int64(MaxGas))
+	tx2 := NewTxStd(it, QSCchainId, gas)
 	signature2, _ := tx2.SignTx(priv, qscnonce, QSCchainId)
 	tx2.Signature = []Signature{Signature{
 		Pubkey:    priv.PubKey(),

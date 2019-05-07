@@ -82,3 +82,22 @@ func TestQueryAccount(t *testing.T) {
 
 
 }
+
+
+
+func TestExtract(t *testing.T) {
+	t.Log("1111111111111111")
+
+	SetBlockchainEntrance("47.105.52.237:26657", "forQmoonAddr")
+	t.Log("2222222222222222")
+
+	privkey := "3mkCg18wWXED4Q6vK3FZc1eXuIgs2OF7+ftgsU5Majt8D0VDSlnlTkr+fPCqc8G3L1JpV3xkm34C4CCMzidOsA=="
+	chainid := "test-chain-xHEkEv"
+	Tout := Extract("100",privkey, "ATOM",  chainid)
+	t.Log(Tout)
+
+
+	result:=BroadcastTransferTxToQSC(Tout,"sync")
+	t.Log(result)
+
+}
