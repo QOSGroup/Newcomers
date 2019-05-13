@@ -85,15 +85,21 @@ func TestQueryAccount(t *testing.T) {
 
 
 
-func TestExtract(t *testing.T) {
+func TestCommHandler(t *testing.T) {
 	t.Log("1111111111111111")
 
-	SetBlockchainEntrance("47.105.52.237:26657", "forQmoonAddr")
+	SetBlockchainEntrance("localhost:26657", "forQmoonAddr")
 	t.Log("2222222222222222")
 
-	privkey := "3mkCg18wWXED4Q6vK3FZc1eXuIgs2OF7+ftgsU5Majt8D0VDSlnlTkr+fPCqc8G3L1JpV3xkm34C4CCMzidOsA=="
-	chainid := "test-chain-xHEkEv"
-	Tout := Extract("100",privkey, "ATOM",  chainid)
+	privkey := "9QkouVPl29N2v1lBO1+azUDqm38fAgs6d3Xo8DcnCus7xjMqsavhc190xCGzZuXcjapUahi7Y7v2DD4hzVCAsQ=="
+	chainid := "test-chain-dpYlL3"
+
+
+
+
+    args:="[\"address1y9r4pjjnvkmpvw46de8tmwunw4nx4qnz2ax5ux\",\"0\",\"abcde\",\"20\",\"20\",\"10\",\"50\",\"20\",\"3\",\"ATOM\"]"
+
+	Tout := CommHandler("ArticleTx",privkey, args,  chainid)
 	t.Log(Tout)
 
 

@@ -1,5 +1,6 @@
 package cosmoswallet
 
+import "C"
 import (
 	"encoding/json"
 	"fmt"
@@ -276,3 +277,11 @@ func Extract( privatekey,  coinsType, coinAmount,qscchainid string) string {
 func BroadcastTransferTxToQSC(txstring,broadcastModes string) string {
 	return slim.BroadcastTransferTxToQSC(txstring,broadcastModes)
 }
+
+
+
+func CommHandler(funcName, privatekey, args,qscchainid string) string {
+	output:= slim.CommHandler(funcName, privatekey, args,qscchainid)
+	return output
+}
+

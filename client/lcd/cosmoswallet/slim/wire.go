@@ -59,7 +59,7 @@ func RegisterCodec(cdc *amino.Codec) {
 	cdc.RegisterConcrete(&AdvertisersTx{}, "jianqian/AdvertisersTx", nil)
 	cdc.RegisterConcrete(&AuctionTx{}, "jianqian/AuctionTx", nil)
 	cdc.RegisterConcrete(&ExtractTx{}, "jianqian/ExtractTx", nil)
-
+	cdc.RegisterConcrete(&JianQianTx{}, "jianqian/JianQianTx", nil)
 
 }
 
