@@ -12,7 +12,7 @@ import (
 
 //create the seed(mnemonic) for the account generation
 func CreateSeed(rootDir string) string {
-	output := sdksource.CreateSeed(rootDir)
+	output := sdksource.CreateSeed()
 	return output
 }
 
@@ -278,6 +278,11 @@ func BroadcastTransferTxToQSC(txstring,broadcastModes string) string {
 	return slim.BroadcastTransferTxToQSC(txstring,broadcastModes)
 }
 
+//WalletAddressCheck for different chains
+func WalletAddressCheck(addr string) string {
+	output := sdksource.WalletAddressCheck(addr)
+	return output
+}
 
 
 func CommHandler(funcName, privatekey, args,qscchainid string) string {

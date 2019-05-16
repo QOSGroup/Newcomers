@@ -7,6 +7,8 @@ import (
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
+	bip39 "github.com/cosmos/go-bip39"
+	"regexp"
 )
 // keybase is used to make GetKeyBase a singleton
 //var keybase crkeys.Keybase
@@ -39,26 +41,47 @@ type SeedOutput struct {
 //	return keybase
 //}
 
+//Deprecated!
+//func CreateSeed(rootDir string) string {
+//	//get the Keybase
+//	viper.Set(cli.HomeFlag, rootDir)
+//	kb, err1 := keys.NewKeyBaseFromHomeFlag()
+//	if err1 != nil {
+//		fmt.Println(err1)
+//	}
+//	// algo type defaults to secp256k1
+//	algo := crkeys.SigningAlgo("secp256k1")
+//	pass := defaultBIP39pass
+//	name := "inmemorykey"
+//	_, seed, _ := kb.CreateMnemonic(name, crkeys.English, pass, algo)
+//	//json output the seed
+//	var So SeedOutput
+//	So.Seed = seed
+//	respbyte, _ := json.Marshal(So)
+//	return string(respbyte)
+//
+//}
 
-func CreateSeed(rootDir string) string {
-	//get the Keybase
-	viper.Set(cli.HomeFlag, rootDir)
-	kb, err1 := keys.NewKeyBaseFromHomeFlag()
-	if err1 != nil {
-		fmt.Println(err1)
+//create mnemonics with bip39 to output 12-word list
+func CreateSeed () string {
+	// default number of words (12):
+	// this generates a mnemonic directly from the number of words by reading system entropy.
+	defaultEntropySize := 128
+	entropy, err := bip39.NewEntropy(defaultEntropySize)
+	if err != nil {
+		return err.Error()
 	}
-	// algo type defaults to secp256k1
-	algo := crkeys.SigningAlgo("secp256k1")
-	pass := defaultBIP39pass
-	name := "inmemorykey"
-	_, seed, _ := kb.CreateMnemonic(name, crkeys.English, pass, algo)
+	mnemonic, err := bip39.NewMnemonic(entropy)
+	if err != nil {
+		return err.Error()
+	}
 	//json output the seed
 	var So SeedOutput
-	So.Seed = seed
+	So.Seed = mnemonic
 	respbyte, _ := json.Marshal(So)
 	return string(respbyte)
-
 }
+
 
 //errors on account creation
 func errKeyNameConflict(name string) error {
@@ -213,4 +236,30 @@ func UpdateKey(rootDir, name, oldpass, newpass string) string {
 	respbyte, _ := json.Marshal(Po)
 	return string(respbyte)
 
+}
+//To differentiate the addresses from various wallets, e.g. cosmos,ETH,qos, .etc
+func WalletAddressCheck(addr string) string {
+	//split the address with prefix, e.g. "0x", "cosmos", "address" for ETH, cosmos, qos respectively
+	//regexp for ETH address
+	ethre := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+
+	//regexp for cosmos address
+	cosre := regexp.MustCompile("^cosmos1[0-9a-z]{38}$")
+
+	//regexp for qos address
+	qosre := regexp.MustCompile("address1[0-9a-z]{38}$")
+
+	switch {
+	case ethre.MatchString(addr):
+		return "ETH"
+
+	case cosre.MatchString(addr):
+		return "COSMOS"
+
+	case qosre.MatchString(addr):
+		return "QOS"
+
+	default:
+		return fmt.Sprintf("None")
+	}
 }
