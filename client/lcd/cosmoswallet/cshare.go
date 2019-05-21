@@ -4,6 +4,7 @@ import "C"
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/eth"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/sdksource"
 	"github.com/cosmos/cosmos-sdk/client/lcd/cosmoswallet/slim"
 	"strings"
@@ -11,7 +12,7 @@ import (
 
 
 //create the seed(mnemonic) for the account generation
-func CreateSeed(rootDir string) string {
+func CreateSeed() string {
 	output := sdksource.CreateSeed()
 	return output
 }
@@ -290,3 +291,33 @@ func CommHandler(funcName, privatekey, args,qscchainid string) string {
 	return output
 }
 
+//From here, Eth wallet part start
+func CreateETHAccount(rootDir, name, password, seed string) string {
+	output := eth.CreateAccount(rootDir,name, password, seed)
+	return output
+}
+
+func RecoverETHAccount(rootDir, name, password, seed string) string {
+	output := eth.RecoverAccount(rootDir,name, password, seed)
+	return output
+}
+
+func GetETHAccount(node,addr string) string {
+	output := eth.GetAccount(node,addr)
+	return output
+}
+
+func GetErc20Account(node, addr, tokenAddr string) string {
+	output := eth.GetAccountERC20(node, addr, tokenAddr)
+	return output
+}
+
+func TransferETH(rootDir, node, name, password, toAddr string, amount int64, gasLimit uint64) string {
+	output := eth.TransferETH(rootDir,node,name,password,toAddr,amount,gasLimit)
+	return output
+}
+
+func TransferErc20(rootDir, node, name, password, toAddr, tokenAddr string, gasLimit uint64) string {
+	output := eth.TransferERC20(rootDir,node,name,password,toAddr,tokenAddr,gasLimit)
+	return output
+}
